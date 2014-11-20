@@ -1,0 +1,268 @@
+*The Project Gutenberg Etext of Chamber Music, by James Joyce* #2 in our series by James Joyce
+Copyright laws are changing all over the world, be sure to check the copyright laws for your country before posting these files!!
+Please take a look at the important information in this header. We encourage you to keep this file on your own disk, keeping an electronic path open for the next readers. Do not remove this.
+*It must legally be the first thing seen when opening the book.* In fact, our legal advisors said we can't even change margins.
+**Welcome To The World of Free Plain Vanilla Electronic Texts**
+**Etexts Readable By Both Humans and By Computers, Since 1971**
+*These Etexts Prepared By Hundreds of Volunteers and Donations*
+Information on contacting Project Gutenberg to get Etexts, and further information is included below. We need your donations.
+Title: Chamber Music
+Author: James Joyce
+September, 2001 [Etext #2817]?[Yes, we are about one year ahead of schedule.]
+*The Project Gutenberg Etext of Chamber Music, by James Joyce* *****This file should be named chamu10.txt or chamu10.zip*****
+Corrected EDITIONS of our etexts get a new NUMBER, chamu11.txt VERSIONS based on separate sources get new LETTER, chamu10a.txt
+Prepared by David Reed haradda@aol.com <mailto:haradda@aol.com> or davidr@inconnect.com <mailto:davidr@inconnect.com>
+Project Gutenberg Etexts are usually created from multiple editions, all of which are in the Public Domain in the United States, unless a copyright notice is included. Therefore, we usually do NOT keep any of these books in compliance with any particular paper edition.
+We are now trying to release all our books one month in advance of the official release dates, leaving time for better editing.
+Please note: neither this list nor its contents are final till midnight of the last day of the month of any such announcement. The official release date of all Project Gutenberg Etexts is at Midnight, Central Time, of the last day of the stated month. A preliminary version may often be posted for suggestion, comment and editing by those who wish to do so. To be sure you have an up to date first edition [xxxxx10x.xxx] please check file sizes in the first week of the next month. Since our ftp program has a bug in it that scrambles the date [tried to fix and failed] a look at the file size will have to do, but we will try to see a new copy has at least one byte more or less.
+Information about Project Gutenberg (one page)
+We produce about two million dollars for each hour we work. The time it takes us, a rather conservative estimate, is fifty hours to get any etext selected, entered, proofread, edited, copyright searched and analyzed, the copyright letters written, etc. This projected audience is one hundred million readers. If our value per text is nominally estimated at one dollar then we produce $2 million dollars per hour this year as we release thirty-six text files per month, or 432 more Etexts in 1999 for a total of 2000+ If these reach just 10% of the computerized population, then the total should reach over 200 billion Etexts given away this year.
+The Goal of Project Gutenberg is to Give Away One Trillion Etext Files by December 31, 2001. [10,000 x 100,000,000 = 1 Trillion] This is ten thousand titles each to one hundred million readers, which is only ~5% of the present number of computer users.
+At our revised rates of production, we will reach only one-third of that goal by the end of 2001, or about 3,333 Etexts unless we manage to get some real funding; currently our funding is mostly from Michael Hart's salary at Carnegie-Mellon University, and an assortment of sporadic gifts; this salary is only good for a few more years, so we are looking for something to replace it, as we don't want Project Gutenberg to be so dependent on one person.
+We need your donations more than ever!
+All donations should be made to "Project Gutenberg/CMU": and are tax deductible to the extent allowable by law. (CMU = CarnegieMellon University).
+For these and other matters, please mail to:
+Project Gutenberg?P. O. Box 2782?Champaign, IL 61825
+When all other email fails. . .try our Executive Director:?Michael S. Hart <hart@pobox.com <mailto:hart@pobox.com>>?hart@pobox.com <mailto:hart@pobox.com> forwards to hart@prairienet.org <mailto:hart@prairienet.org> and archive.org if your mail bounces from archive.org, I will still see it, if it bounces from prairienet.org, better resend later on. . . .
+We would prefer to send you this information by email.
+
+To access Project Gutenberg etexts, use any Web browser?to view <http://promo.net/pg>. This site lists Etexts by?author and by title, and includes information about how?to get involved with Project Gutenberg. You could also?download our past Newsletters, or subscribe here. This?is one of our major sites, please email hart@pobox.com <mailto:hart@pobox.com>,?for a more complete list of our various sites.
+To go directly to the etext collections, use FTP or any?Web browser to visit a Project Gutenberg mirror (mirror?sites are available on 7 continents; mirrors are listed?at <http://promo.net/pg>).
+Mac users, do NOT point and click, typing works better.
+Example FTP session:
+ftp metalab.unc.edu <ftp://metalab.unc.edu/>?login: anonymous?password: your@login?cd pub/docs/books/gutenberg?cd etext90 through etext99 or etext00 through etext01, etc. dir [to see files]?get or mget [to get files. . .set bin for zip files]?GET GUTINDEX.?? [to get a year's listing of books, e.g., GUTINDEX.99] GET GUTINDEX.ALL [to get a listing of ALL books]
+***
+**Information prepared by the Project Gutenberg legal advisor**
+(Three Pages)
+***START**THE SMALL PRINT!**FOR PUBLIC DOMAIN ETEXTS**START*** Why is this "Small Print!" statement here? You know: lawyers. They tell us you might sue us if there is something wrong with your copy of this etext, even if you got it for free from?someone other than us, and even if what's wrong is not our?fault. So, among other things, this "Small Print!" statement disclaims most of our liability to you. It also tells you how you can distribute copies of this etext if you want to.
+*BEFORE!* YOU USE OR READ THIS ETEXT?By using or reading any part of this PROJECT GUTENBERG-tm?etext, you indicate that you understand, agree to and accept this "Small Print!" statement. If you do not, you can receive a refund of the money (if any) you paid for this etext by?sending a request within 30 days of receiving it to the person you got it from. If you received this etext on a physical?medium (such as a disk), you must return it with your request.
+ABOUT PROJECT GUTENBERG-TM ETEXTS?This PROJECT GUTENBERG-tm etext, like most PROJECT GUTENBERGtm etexts, is a "public domain" work distributed by Professor?Michael S. Hart through the Project Gutenberg Association at Carnegie-Mellon University (the "Project"). Among other?things, this means that no one owns a United States copyright on or for this work, so the Project (and you!) can copy and distribute it in the United States without permission and?without paying copyright royalties. Special rules, set forth below, apply if you wish to copy and distribute this etext?under the Project's "PROJECT GUTENBERG" trademark.
+To create these etexts, the Project expends considerable?efforts to identify, transcribe and proofread public domain works. Despite these efforts, the Project's etexts and any medium they may be on may contain "Defects". Among other?things, Defects may take the form of incomplete, inaccurate or corrupt data, transcription errors, a copyright or other?intellectual property infringement, a defective or damaged?disk or other etext medium, a computer virus, or computer?codes that damage or cannot be read by your equipment.
+LIMITED WARRANTY; DISCLAIMER OF DAMAGES?But for the "Right of Replacement or Refund" described below, [1] the Project (and any other party you may receive this?etext from as a PROJECT GUTENBERG-tm etext) disclaims all?liability to you for damages, costs and expenses, including legal fees, and [2] YOU HAVE NO REMEDIES FOR NEGLIGENCE OR?UNDER STRICT LIABILITY, OR FOR BREACH OF WARRANTY OR CONTRACT, INCLUDING BUT NOT LIMITED TO INDIRECT, CONSEQUENTIAL, PUNITIVE OR INCIDENTAL DAMAGES, EVEN IF YOU GIVE NOTICE OF THE?POSSIBILITY OF SUCH DAMAGES.
+If you discover a Defect in this etext within 90 days of?receiving it, you can receive a refund of the money (if any) you paid for it by sending an explanatory note within that?time to the person you received it from. If you received it on a physical medium, you must return it with your note, and such person may choose to alternatively give you a replacement copy. If you received it electronically, such person may?choose to alternatively give you a second opportunity to?receive it electronically.
+THIS ETEXT IS OTHERWISE PROVIDED TO YOU "AS-IS". NO OTHER?WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, ARE MADE TO YOU AS TO THE ETEXT OR ANY MEDIUM IT MAY BE ON, INCLUDING BUT NOT?LIMITED TO WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A?PARTICULAR PURPOSE.
+Some states do not allow disclaimers of implied warranties or the exclusion or limitation of consequential damages, so the above disclaimers and exclusions may not apply to you, and you may have other legal rights.
+INDEMNITY?You will indemnify and hold the Project, its directors,?officers, members and agents harmless from all liability, cost and expense, including legal fees, that arise directly or?indirectly from any of the following that you do or cause:?[1] distribution of this etext, [2] alteration, modification, or addition to the etext, or [3] any Defect.
+DISTRIBUTION UNDER "PROJECT GUTENBERG-tm"?You may distribute copies of this etext electronically, or by disk, book or any other medium if you either delete this?"Small Print!" and all other references to Project Gutenberg, or:
+[1] Only give exact copies of it. Among other things, this
+requires that you do not remove, alter or modify the?etext or this "small print!" statement. You may however, if you wish, distribute this etext in machine readable binary, compressed, mark-up, or proprietary form,?including any form resulting from conversion by word processing or hypertext software, but only so long as?*EITHER*:
+[*] The etext, when displayed, is clearly readable, and
+does *not* contain characters other than those?intended by the author of the work, although tilde (~), asterisk (*) and underline (_) characters may be used to convey punctuation intended by the?author, and additional characters may be used to?indicate hypertext links; OR
+[*] The etext may be readily converted by the reader at
+no expense into plain ASCII, EBCDIC or equivalent form by the program that displays the etext (as is the case, for instance, with most word processors); OR
+[*] You provide, or agree to also provide on request at
+no additional cost, fee or expense, a copy of the etext in its original plain ASCII form (or in EBCDIC or other equivalent proprietary form).
+[2] Honor the etext refund and replacement provisions of this
+"Small Print!" statement.
+[3] Pay a trademark license fee to the Project of 20% of the
+net profits you derive calculated using the method you already use to calculate your applicable taxes. If you don't derive profits, no royalty is due. Royalties are payable to "Project Gutenberg Association/Carnegie-Mellon University" within the 60 days following each?date you prepare (or were legally required to prepare) your annual (or equivalent periodic) tax return.
+WHAT IF YOU *WANT* TO SEND MONEY EVEN IF YOU DON'T HAVE TO? The Project gratefully accepts contributions in money, time, scanning machines, OCR software, public domain etexts, royalty free copyright licenses, and every other sort of contribution you can think of. Money should be paid to "Project Gutenberg Association / Carnegie-Mellon University".
+We are planning on making some changes in our donation structure in 2000, so you might want to email me, hart@pobox.com <mailto:hart@pobox.com> beforehand.
+*END THE SMALL PRINT! FOR PUBLIC DOMAIN ETEXTS*Ver.04.29.93*END*
+Prepared by David Reed haradda@aol.com <mailto:haradda@aol.com> or davidr@inconnect.com <mailto:davidr@inconnect.com>
+Chamber Music
+by James Joyce
+Contents:
+I
+Strings in the earth and air?Make music sweet;
+II
+The twilight turns from amethyst?To deep and deeper blue,
+III
+At that hour when all things have repose,?O lonely watcher of the skies,
+IV
+When the shy star goes forth in heaven?All maidenly, disconsolate,
+V
+Lean out of the window,?Goldenhair,
+VI
+I would in that sweet bosom be?(O sweet it is and fair it is!)
+VII
+My love is in a light attire?Among the apple-trees,
+VIII
+Who goes amid the green wood?With springtide all adorning her?
+IX
+Winds of May, that dance on the sea,?Dancing a ring-around in glee
+X
+Bright cap and streamers,?He sings in the hollow:
+XI
+Bid adieu, adieu, adieu,?Bid adieu to girlish days,
+XII
+What counsel has the hooded moon?Put in thy heart, my shyly sweet,
+XIII
+Go seek her out all courteously,?And say I come,
+XIV
+My dove, my beautiful one,?Arise, arise!
+XV
+From dewy dreams, my soul, arise,?From love's deep slumber and from death,
+XVI
+O cool is the valley now?And there, love, will we go
+XVII
+Because your voice was at my side?I gave him pain,
+XVIII
+O Sweetheart, hear you?Your lover's tale;
+XIX
+Be not sad because all men?Prefer a lying clamour before you:
+XX
+In the dark pine-wood?I would we lay,
+XXI
+He who hath glory lost, nor hath?Found any soul to fellow his,
+XXII
+Of that so sweet imprisonment?My soul, dearest, is fain -- -
+XXIII
+This heart that flutters near my heart?My hope and all my riches is,
+XXIV
+Silently she's combing,?Combing her long hair
+XXV
+Lightly come or lightly go:?Though thy heart presage thee woe,
+XXVI
+Thou leanest to the shell of night,?Dear lady, a divining ear.
+XXVII
+Though I thy Mithridates were,?Framed to defy the poison-dart,
+XXVIII
+Gentle lady, do not sing?Sad songs about the end of love;
+XXIX
+Dear heart, why will you use me so??Dear eyes that gently me upbraid,
+XXX
+Love came to us in time gone by?When one at twilight shyly played
+XXXI
+O, it was out by Donnycarney?When the bat flew from tree to tree
+XXXII
+Rain has fallen all the day.?O come among the laden trees:
+XXXIII
+Now, O now, in this brown land?Where Love did so sweet music make
+XXXIV
+Sleep now, O sleep now,?O you unquiet heart!
+XXXV
+All day I hear the noise of waters?Making moan,
+XXXVI
+I hear an army charging upon the land,?And the thunder of horses plunging, foam about their knees:
+Chamber Music
+I
+Strings in the earth and air?Make music sweet;?Strings by the river where?The willows meet.
+There's music along the river?For Love wanders there,?Pale flowers on his mantle,?Dark leaves on his hair.
+All softly playing,?With head to the music bent,?And fingers straying?Upon an instrument.
+II
+The twilight turns from amethyst?To deep and deeper blue,?The lamp fills with a pale green glow?The trees of the avenue.
+The old piano plays an air,?Sedate and slow and gay;?She bends upon the yellow keys,?Her head inclines this way.
+Shy thought and grave wide eyes and hands?That wander as they list -- -?The twilight turns to darker blue?With lights of amethyst.
+III
+At that hour when all things have repose,?O lonely watcher of the skies,?Do you hear the night wind and the sighs?Of harps playing unto Love to unclose?The pale gates of sunrise?
+When all things repose, do you alone?Awake to hear the sweet harps play?To Love before him on his way,?And the night wind answering in antiphon?Till night is overgone?
+Play on, invisible harps, unto Love,?Whose way in heaven is aglow?At that hour when soft lights come and go,?Soft sweet music in the air above?And in the earth below.
+IV
+When the shy star goes forth in heaven?All maidenly, disconsolate,?Hear you amid the drowsy even?One who is singing by your gate.?His song is softer than the dew?And he is come to visit you.
+O bend no more in revery?When he at eventide is calling.?Nor muse: Who may this singer be?Whose song about my heart is falling??Know you by this, the lover's chant,?'Tis I that am your visitant.
+V
+Lean out of the window,?Goldenhair,?I hear you singing?A merry air.
+My book was closed,?I read no more,?Watching the fire dance?On the floor.
+I have left my book,?I have left my room,?For I heard you singing?Through the gloom.
+Singing and singing?A merry air,?Lean out of the window,?Goldenhair.
+VI
+I would in that sweet bosom be?(O sweet it is and fair it is!)?Where no rude wind might visit me.?Because of sad austerities?I would in that sweet bosom be.
+I would be ever in that heart?(O soft I knock and soft entreat her!)?Where only peace might be my part.?Austerities were all the sweeter?So I were ever in that heart.
+VII
+My love is in a light attire?Among the apple-trees,?Where the gay winds do most desire?To run in companies.
+There, where the gay winds stay to woo?The young leaves as they pass,?My love goes slowly, bending to?Her shadow on the grass;
+And where the sky's a pale blue cup?Over the laughing land,?My love goes lightly, holding up?Her dress with dainty hand.
+VIII
+Who goes amid the green wood?With springtide all adorning her??Who goes amid the merry green wood?To make it merrier?
+Who passes in the sunlight?By ways that know the light footfall??Who passes in the sweet sunlight?With mien so virginal?
+The ways of all the woodland?Gleam with a soft and golden fire -- -?For whom does all the sunny woodland?Carry so brave attire?
+O, it is for my true love?The woods their rich apparel wear -- -?O, it is for my own true love,?That is so young and fair.
+IX
+Winds of May, that dance on the sea,?Dancing a ring-around in glee?From furrow to furrow, while overhead?The foam flies up to be garlanded,?In silvery arches spanning the air,?Saw you my true love anywhere??Welladay! Welladay!?For the winds of May!?Love is unhappy when love is away!
+X
+Bright cap and streamers,?He sings in the hollow:?Come follow, come follow,
+All you that love.?Leave dreams to the dreamers?That will not after,?That song and laughter
+Do nothing move.
+With ribbons streaming?He sings the bolder;?In troop at his shoulder
+The wild bees hum.?And the time of dreaming?Dreams is over -- -?As lover to lover,
+Sweetheart, I come.
+XI
+Bid adieu, adieu, adieu,?Bid adieu to girlish days,?Happy Love is come to woo?Thee and woo thy girlish ways -- -?The zone that doth become thee fair,?The snood upon thy yellow hair,
+When thou hast heard his name upon?The bugles of the cherubim?Begin thou softly to unzone?Thy girlish bosom unto him?And softly to undo the snood?That is the sign of maidenhood.
+XII
+What counsel has the hooded moon?Put in thy heart, my shyly sweet,?Of Love in ancient plenilune,?Glory and stars beneath his feet -- -?A sage that is but kith and kin?With the comedian Capuchin?
+Believe me rather that am wise?In disregard of the divine,?A glory kindles in those eyes?Trembles to starlight. Mine, O Mine!?No more be tears in moon or mist?For thee, sweet sentimentalist.
+XIII
+Go seek her out all courteously,?And say I come,?Wind of spices whose song is ever?Epithalamium.?O, hurry over the dark lands?And run upon the sea?For seas and lands shall not divide us?My love and me.
+Now, wind, of your good courtesy?I pray you go,?And come into her little garden?And sing at her window;?Singing: The bridal wind is blowing?For Love is at his noon;?And soon will your true love be with you,?Soon, O soon.
+XIV
+My dove, my beautiful one,?Arise, arise!?The night-dew lies?Upon my lips and eyes.
+The odorous winds are weaving?A music of sighs:?Arise, arise,?My dove, my beautiful one!
+I wait by the cedar tree,?My sister, my love,?White breast of the dove,?My breast shall be your bed.
+The pale dew lies?Like a veil on my head.?My fair one, my fair dove,?Arise, arise!
+XV
+From dewy dreams, my soul, arise,?From love's deep slumber and from death,?For lo! the treees are full of sighs?Whose leaves the morn admonisheth.
+Eastward the gradual dawn prevails?Where softly-burning fires appear,?Making to tremble all those veils?Of grey and golden gossamer.
+While sweetly, gently, secretly,?The flowery bells of morn are stirred?And the wise choirs of faery?Begin (innumerous!) to be heard.
+XVI
+O cool is the valley now?And there, love, will we go?For many a choir is singing now?Where Love did sometime go.?And hear you not the thrushes calling,?Calling us away??O cool and pleasant is the valley?And there, love, will we stay.
+XVII
+Because your voice was at my side?I gave him pain,?Because within my hand I held?Your hand again.
+There is no word nor any sign?Can make amend -- -?He is a stranger to me now?Who was my friend.
+XVIII
+O Sweetheart, hear you?Your lover's tale;?A man shall have sorrow?When friends him fail.
+For he shall know then?Friends be untrue?And a little ashes?Their words come to.
+But one unto him?Will softly move?And softly woo him?In ways of love.
+His hand is under?Her smooth round breast;?So he who has sorrow?Shall have rest.
+XIX
+Be not sad because all men?Prefer a lying clamour before you:?Sweetheart, be at peace again -- -?Can they dishonour you?
+They are sadder than all tears;?Their lives ascend as a continual sigh.?Proudly answer to their tears:?As they deny, deny.
+XX
+In the dark pine-wood?I would we lay,?In deep cool shadow?At noon of day.
+How sweet to lie there,?Sweet to kiss,?Where the great pine-forest?Enaisled is!
+Thy kiss descending?Sweeter were?With a soft tumult?Of thy hair.
+O unto the pine-wood?At noon of day?Come with me now,?Sweet love, away.
+XXI
+He who hath glory lost, nor hath?Found any soul to fellow his,?Among his foes in scorn and wrath?Holding to ancient nobleness,?That high unconsortable one -- -?His love is his companion.
+XXII
+Of that so sweet imprisonment?My soul, dearest, is fain -- -?Soft arms that woo me to relent?And woo me to detain.?Ah, could they ever hold me there?Gladly were I a prisoner!
+Dearest, through interwoven arms?By love made tremulous,?That night allures me where alarms?Nowise may trouble us;?But lseep to dreamier sleep be wed?Where soul with soul lies prisoned.
+XXIII
+This heart that flutters near my heart?My hope and all my riches is,?Unhappy when we draw apart?And happy between kiss and kiss:?My hope and all my riches -- - yes! -- -?And all my happiness.
+For there, as in some mossy nest?The wrens will divers treasures keep,?I laid those treasures I possessed?Ere that mine eyes had learned to weep.?Shall we not be as wise as they?Though love live but a day?
+XXIV
+Silently she's combing,?Combing her long hair?Silently and graciously,?With many a pretty air.
+The sun is in the willow leaves?And on the dapplled grass,?And still she's combing her long hair?Before the looking-glass.
+I pray you, cease to comb out,?Comb out your long hair,?For I have heard of witchery?Under a pretty air,
+That makes as one thing to the lover?Staying and going hence,?All fair, with many a pretty air?And many a negligence.
+XXV
+Lightly come or lightly go:?Though thy heart presage thee woe,?Vales and many a wasted sun,?Oread let thy laughter run,?Till the irreverent mountain air?Ripple all thy flying hair.
+Lightly, lightly -- - ever so:?Clouds that wrap the vales below?At the hour of evenstar?Lowliest attendants are;?Love and laughter song-confessed?When the heart is heaviest.
+XXVI
+Thou leanest to the shell of night,?Dear lady, a divining ear.?In that soft choiring of delight?What sound hath made thy heart to fear??Seemed it of rivers rushing forth?From the grey deserts of the north?
+That mood of thine?Is his, if thou but scan it well,?Who a mad tale bequeaths to us?At ghosting hour conjurable -- -?And all for some strange name he read
+In Purchas or in Holinshed.
+XXVII
+Though I thy Mithridates were,?Framed to defy the poison-dart,?Yet must thou fold me unaware?To know the rapture of thy heart,?And I but render and confess?The malice of thy tenderness.
+For elegant and antique phrase,?Dearest, my lips wax all too wise;?Nor have I known a love whose praise?Our piping poets solemnize,?Neither a love where may not be?Ever so little falsity.
+XXVIII
+Gentle lady, do not sing?Sad songs about the end of love;?Lay aside sadness and sing?How love that passes is enough.
+Sing about the long deep sleep?Of lovers that are dead, and how?In the grave all love shall sleep:?Love is aweary now.
+XXIX
+Dear heart, why will you use me so??Dear eyes that gently me upbraid,?Still are you beautiful -- - but O,?How is your beauty raimented!
+Through the clear mirror of your eyes,?Through the soft sigh of kiss to kiss,?Desolate winds assail with cries?The shadowy garden where love is.
+And soon shall love dissolved be?When over us the wild winds blow -- -?But you, dear love, too dear to me,?Alas! why will you use me so?
+XXX
+Love came to us in time gone by?When one at twilight shyly played?And one in fear was standing nigh -- -?For Love at first is all afraid.
+We were grave lovers. Love is past?That had his sweet hours many a one;?Welcome to us now at the last?The ways that we shall go upon.
+XXXI
+O, it was out by Donnycarney?When the bat flew from tree to tree?My love and I did walk together;?And sweet were the words she said to me.
+Along with us the summer wind?Went murmuring -- - O, happily! -- -?But softer than the breath of summer?Was the kiss she gave to me.
+XXXII
+Rain has fallen all the day.?O come among the laden trees:?The leaves lie thick upon the way?Of memories.
+Staying a little by the way?Of memories shall we depart.?Come, my beloved, where I may?Speak to your heart.
+XXXIII
+Now, O now, in this brown land?Where Love did so sweet music make?We two shall wander, hand in hand,?Forbearing for old friendship' sake,?Nor grieve because our love was gay?Which now is ended in this way.
+A rogue in red and yellow dress?Is knocking, knocking at the tree;?And all around our loneliness?The wind is whistling merrily.?The leaves -- - they do not sigh at all?When the year takes them in the fall.
+Now, O now, we hear no more?The vilanelle and roundelay!?Yet will we kiss, sweetheart, before?We take sad leave at close of day.?Grieve not, sweetheart, for anything -- -?The year, the year is gathering.
+XXXIV
+Sleep now, O sleep now,?O you unquiet heart!?A voice crying "Sleep now"?Is heard in my heart.
+The voice of the winter?Is heard at the door.?O sleep, for the winter?Is crying "Sleep no more."
+My kiss will give peace now?And quiet to your heart -- -?Sleep on in peace now,?O you unquiet heart!
+XXXV
+All day I hear the noise of waters?Making moan,?Sad as the sea-bird is when, going?Forth alone,?He hears the winds cry to the water's?Monotone.?The grey winds, the cold winds are blowing?Where I go.?I hear the noise of many waters?Far below.?All day, all night, I hear them flowing?To and fro.
+XXXVI
+I hear an army charging upon the land,?And the thunder of horses plunging, foam about their knees: Arrogant, in black armour, behind them stand,?Disdaining the reins, with fluttering ships, the charioteers. They cry unto the night their battle-name:?I moan in sleep when I hear afar their whirling laughter.?They cleave the gloom of dreams, a blinding flame,?Clanging, clanging upon the heart as upon an anvil.?They come shaking in triumph their long, green hair:?They come out of the sea and run shouting by the shore.?My heart, have you no wisdom thus to despair??My love, my love, my love, why have you left me alone?
+End of The Project Gutenberg Etext of Chamber Music, by James Joyce
+from http://www.umnet.com/  ---umnet.com,mobile your fun!---
