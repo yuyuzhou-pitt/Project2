@@ -1,5 +1,5 @@
 This a file format agreement document
-Actually output may differ a little if different policyis used. 
+Actually output may differ a little if different policy used. 
 
 
 [inverted index]
@@ -12,7 +12,7 @@ key_words  map  reduce  sort
 
 
 [query]
-+-------+               +-----------+          +---------+     +--------+
-|  key  |  map          |    map    |   sort   |         |     |        |
-| words |-------------->|           |--------->|  sort   |---->| reduce |
-+-------+               +-----------+          +---------+     +--------+
++-------+               +-----------+          +---------+         +--------+
+|  key  |  map          |    map    |   sort   |         |  reduce |        |
+| words |-------------->|           |--------->|  sort   |-------->| reduce |
++-------+               +-----------+          +---------+         +--------+

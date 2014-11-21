@@ -1,0 +1,2 @@
+(AFS)	doc1	4	doc2	1
+AFS	doc2	11	doc1	4
