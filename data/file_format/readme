@@ -1,0 +1,18 @@
+This a file format agreement document
+Actually output may differ a little if different policyis used. 
+
+
+[inverted index]
++--------+           +-------+        +-------+       +-------+         +--------+
+| input  |  split    | after |  map   | after | sort  | after | reduce  | after  |
+| file   |---------->| split |------->|  map  |------>|  sort |-------->| reduce |
++--------+           +-------+        +-------+       +-------+         +--------+
+
+key_words  map  reduce  sort
+
+
+[query]
++-------+               +-----------+          +---------+     +--------+
+|  key  |  map          |    map    |   sort   |         |     |        |
+| words |-------------->|           |--------->|  sort   |---->| reduce |
++-------+               +-----------+          +---------+     +--------+

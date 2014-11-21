@@ -1,0 +1,1 @@
+Andrew File System (AFS) is a distributed file system which uses a set of trusted servers to present a homogeneous, location-transparent file name space to all the client workstations. It was developed by Carnegie Mellon University as part of the Andrew Project. It is named after Andrew Carnegie and Andrew Mellon. Its primary use is in distributed computing.
