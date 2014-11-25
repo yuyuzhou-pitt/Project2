@@ -41,6 +41,28 @@ OptionsStruct *command2struct(char *input){
     return parse_options;
 }
 
+OptionsStruct *argv2struct(int argc, char *argv[]){
+    OptionsStruct *parse_options;
+    parse_options = (OptionsStruct *)calloc(1, sizeof(OptionsStruct));
+    snprintf(parse_options->command, sizeof(parse_options->command), "%s", argv[1]);
+    printf("parse_options->command=%s.\n", parse_options->command);
+    if (argc > 2){
+        snprintf(parse_options->option1, sizeof(parse_options->option1), "%s", argv[2]);
+        snprintf(parse_options->option2, sizeof(parse_options->option2), "%s", argv[3]);
+        snprintf(parse_options->option3, sizeof(parse_options->option3), "%s", argv[4]);
+        printf("parse_options->option1=%s.\n", parse_options->option1);
+        printf("parse_options->option2=%s.\n", parse_options->option2);
+        printf("parse_options->option3=%s.\n", parse_options->option3);
+    }
+    if (argc > 5){
+        snprintf(parse_options->option4, sizeof(parse_options->option4), "%s", argv[5]);
+        snprintf(parse_options->option5, sizeof(parse_options->option5), "%s", argv[6]);
+        printf("parse_options->option4=%s.\n", parse_options->option4);
+        printf("parse_options->option5=%s.\n", parse_options->option5);
+    }
+    return parse_options;
+}
+
 // parse command into options, 3 the most
 int command2array(char *command, char options[3][32]){
     char *option1, *option2, *option3, *option4;
@@ -166,6 +188,24 @@ int helpClient(){
     printf("  help      show this message\n");
     printf("  request   <program-name> <version-number> <procedure>\n");
     printf("		request server info for certain procedure provided by certain program of certain version\n");
+    printf("  execute   <program-name> <version-number> <procedure> <input_file> <out_putfile>\n");
+    printf("            request and call the remote procedure call\n");
+    printf("  quit      stop SRPC socket and quit\n");
+
+    return 0;
+}
+
+/****************
+* 5. minigoogle *
+*****************/
+
+int helpMiniGoogle(){
+    printf("\nUsage: ./minigoogle <subcommand> [options]\n");
+    printf("A user interface for the SRPC system.\n\n");
+    printf("Subcommands:\n");
+    printf("  help      show this message\n");
+    printf("  request   <program-name> <version-number> <procedure>\n");
+    printf("            request server info for certain procedure provided by certain program of certain version\n");
     printf("  execute   <program-name> <version-number> <procedure> <input_file> <out_putfile>\n");
     printf("            request and call the remote procedure call\n");
     printf("  quit      stop SRPC socket and quit\n");
