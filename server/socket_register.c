@@ -119,26 +119,26 @@ void *sockregister(void *arg){
      * 3) Hello Packets (from server to port mapper)            (111)
      * */
 
-        if(portFound == 1){
-            if((host = gethostbyname(remote_ipstr)) == NULL ) { // got the remote server
-                perror("gethostbyname");
-                exit(-1);
-            };
+    if(portFound == 1){
+        if((host = gethostbyname(remote_ipstr)) == NULL ) { // got the remote server
+            perror("gethostbyname");
+            exit(-1);
+        };
 
-            /* connect to remote server */
-            /*create socket*/
-            clientfd = Socket(AF_INET, SOCK_STREAM, 0);
+        /* connect to remote server */
+        /*create socket*/
+        clientfd = Socket(AF_INET, SOCK_STREAM, 0);
 
-            /*parameters for sockaddr_in*/
-            sockaddr.sin_family = AF_INET;
-            sockaddr.sin_port = htons(atoi(remote_portstr));
-            sockaddr.sin_addr = *((struct in_addr *)host->h_addr);
-            bzero(&(sockaddr.sin_zero), 8);
+        /*parameters for sockaddr_in*/
+        sockaddr.sin_family = AF_INET;
+        sockaddr.sin_port = htons(atoi(remote_portstr));
+        sockaddr.sin_addr = *((struct in_addr *)host->h_addr);
+        bzero(&(sockaddr.sin_zero), 8);
 
-            /*connect to server*/
-            Connect(clientfd,sockaddr,sizeof(sockaddr));
+        /*connect to server*/
+        Connect(clientfd,sockaddr,sizeof(sockaddr));
 
-        }
+    }
 
     pthread_mutex_lock(&register_mutex);
 

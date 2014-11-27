@@ -32,6 +32,7 @@
 #include "../lib/libterminal.h"
 #include "../lib/liblog.h"
 #include "../lib/libfile.h"
+#include "../lib/libscientific.h"
 
 #define PORT 0 //0 means assign a port randomly
 #define BUFFER_SIZE  1024
@@ -40,12 +41,16 @@
 LoadLink *loadBalanceLinkHead;
 LoadLink *loadBalanceLinkEnd;
 
+RemoteProgram *(*libraryPtr)();
+
 int main(int argc, char *argv[]){
 
     if(argc > 1){
         fprintf(stderr, "USAGE: ./port-mapper (no options required)\n");
         exit(1);
     }
+
+    libraryPtr = getLibraryPtr(); // configurable library function
 
     /*initial the load balance link for client request service use*/
     initLoadSeq();

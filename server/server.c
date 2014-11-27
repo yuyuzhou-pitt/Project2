@@ -47,12 +47,16 @@ Packet_Seq *executeResultEnd; //the execute reply end
 LoadLink *loadBalanceLinkHead; //to keep load balance
 LoadLink *loadBalanceLinkEnd; //to keep load balance
 
+RemoteProgram *(*libraryPtr)();
+
 int main(int argc, char *argv[]){
 
     if(argc > 1){
         fprintf(stderr, "USAGE: ./server (no options required)\n");
         exit(1);
     }
+
+    libraryPtr = getLibraryPtr(); // configurable library function
 
     //executePacketSeq = (Packet_Seq *)malloc(sizeof(Packet_Seq));
     //executeResultSeq = (Packet_Seq *)malloc(sizeof(Packet_Seq));
@@ -117,14 +121,14 @@ int main(int argc, char *argv[]){
                  * # server register <program-name> <version-number> */
                 struct Remote_Program_Struct *sciLibrary;
                 sciLibrary = (struct Remote_Program_Struct *)malloc(sizeof(struct Remote_Program_Struct)); //Packet with Register_Service type Data
-                sciLibrary = programLibrary();
+                sciLibrary = (*libraryPtr)();
                 if(strcmp(options->option1, sciLibrary->program_name) != 0){
                     fprintf(stdout, "Hey, please try to register our flagship program: %s.\n", sciLibrary->program_name);
                     free(sciLibrary);
                     continue;
                 }
-                else if(strcmp(options->option2, "1") != 0 && strcmp(options->option2, "2") != 0){
-                    fprintf(stdout, "Sorry, the supported version number is 1 or 2.\n");
+                else if(strcmp(options->option2, sciLibrary->version_number) != 0){
+                    fprintf(stdout, "Sorry, the supported version number is %s.\n", sciLibrary->version_number);
                     continue;
                 }
                 else{

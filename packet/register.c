@@ -26,17 +26,17 @@
 Packet *genRegister(OptionsStruct *options, char *server_ip, char *port_mapper_ip){
     struct Remote_Program_Struct *sciLibrary;
     sciLibrary = (struct Remote_Program_Struct*)malloc(sizeof(struct Remote_Program_Struct)); //Packet with Register_Service type Data
-    sciLibrary = programLibrary();
+    sciLibrary = (*libraryPtr)();
     //int getPort(char *portstr, int size, char *ipfile)
     Register_Serv register_serv; // MUST NOT be pointer as to be send remote
     snprintf(register_serv.program_name, sizeof(register_serv.program_name), "%s", options->option1);
     snprintf(register_serv.version_number, sizeof(register_serv.version_number), "%s", options->option2);
     snprintf(register_serv.port_number, sizeof(register_serv.port_number), "%d", getPortNumber(server_ip));
-    register_serv.procedure_number = 4;
-    snprintf(register_serv.procedure_names[0], sizeof(register_serv.procedure_names[0]), "%s", sciLibrary->procedure1);
-    snprintf(register_serv.procedure_names[1], sizeof(register_serv.procedure_names[1]), "%s", sciLibrary->procedure2);
-    snprintf(register_serv.procedure_names[2], sizeof(register_serv.procedure_names[2]), "%s", sciLibrary->procedure3);
-    snprintf(register_serv.procedure_names[3], sizeof(register_serv.procedure_names[3]), "%s", sciLibrary->procedure4);
+    register_serv.procedure_number = sciLibrary->procedure_number;
+    int pN;
+    for(pN=0; pN < sciLibrary->procedure_number; pN++){
+        snprintf(register_serv.procedure_names[pN], sizeof(register_serv.procedure_names[pN]), "%s", sciLibrary->procedures[pN]);
+    }
 
     /*wrap into packet*/
     Packet *register_packet;

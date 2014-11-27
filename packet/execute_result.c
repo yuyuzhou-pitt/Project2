@@ -48,7 +48,7 @@ int writeResultFile(char *result_file){
 
     struct Remote_Program_Struct *sciLibrary;
     sciLibrary = (struct Remote_Program_Struct *)malloc(sizeof(struct Remote_Program_Struct)); //Packet with Register_Service type Data 
-    sciLibrary = programLibrary();
+    sciLibrary = (*libraryPtr)();
 
     int m, n, l;
     m = n = l = 0;

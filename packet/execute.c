@@ -75,7 +75,7 @@ Packet_Seq *genExecuteServ(OptionsStruct *options, char *client_ip, char *server
 
     struct Remote_Program_Struct *sciLibrary;
     sciLibrary = (struct Remote_Program_Struct *)malloc(sizeof(struct Remote_Program_Struct)); //Packet with Register_Service type Data
-    sciLibrary = programLibrary();
+    sciLibrary = (*libraryPtr)();
 
     Packet execPkt;
     //execPkt = (Packet *)malloc(sizeof(Packet));
@@ -249,7 +249,7 @@ int calcResult(OptionsStruct *result_options, char *client_ip, char *server_ip, 
 
     struct Remote_Program_Struct *sciLibrary;
     sciLibrary = (struct Remote_Program_Struct *)malloc(sizeof(struct Remote_Program_Struct)); //Packet with Register_Service type Data 
-    sciLibrary = programLibrary();
+    sciLibrary = (*libraryPtr)();
 
     Packet_Seq *t, *r;
     t = recv_exec_seq;

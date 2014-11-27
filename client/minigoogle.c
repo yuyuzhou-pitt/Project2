@@ -50,6 +50,8 @@ Packet_Seq *executeResultEnd; //the execute reply end
 LoadLink *loadBalanceLinkHead; //to keep load balance
 LoadLink *loadBalanceLinkEnd; //to keep load balance
 
+RemoteProgram *(*libraryPtr)();
+
 int main(int argc, char *argv[]){
 
     if(argc < 2 || argc > 7){
@@ -58,6 +60,8 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
+    libraryPtr = getLibraryPtr(); // configurable library function
+
     /*initial the global seq for execute client thread*/
     initExecuteSeq();
     /*initial the load balance link for client request service use*/
@@ -65,7 +69,7 @@ int main(int argc, char *argv[]){
 
     struct Remote_Program_Struct *sciLibrary;
     sciLibrary = (struct Remote_Program_Struct *)malloc(sizeof(struct Remote_Program_Struct)); //Packet with Register_Service type Data
-    sciLibrary = programLibrary();
+    sciLibrary = (*libraryPtr)();
 
     OptionsStruct *input_options;
     //input_options = (OptionsStruct *)calloc(1, sizeof(OptionsStruct));
@@ -86,23 +90,28 @@ int main(int argc, char *argv[]){
         input_options = argv2struct(argc, argv);
 
         if(strcmp(input_options->option1, sciLibrary->program_name) != 0){
-        printf("input_options->option1=%s.\n", input_options->option1);
-        printf("sciLibrary->program_name=%s.\n", sciLibrary->program_name);
             fprintf(stdout, "Hey, please try to request our flagship program: %s.\n", sciLibrary->program_name);
+            exit(1);
         }
-        else if(strcmp(input_options->option2, "1") != 0 && strcmp(input_options->option2, "2") != 0){
-            fprintf(stdout, "Sorry, the supported version number is 1 or 2.\n");
+        else if(strcmp(input_options->option2, sciLibrary->version_number) != 0){
+            fprintf(stdout, "Sorry, the supported version number is %d.\n", sciLibrary->version_number);
+            exit(1);
         }
-        else if(strcmp(input_options->option3, sciLibrary->procedure1) != 0 &&
-                strcmp(input_options->option3, sciLibrary->procedure2) != 0 &&
-                strcmp(input_options->option3, sciLibrary->procedure3) != 0 &&
-                strcmp(input_options->option3, sciLibrary->procedure4) != 0){
-            fprintf(stdout, "Sorry, the supported procedure are %s, %s, %s, and %s.\n", sciLibrary->procedure1,
-                    sciLibrary->procedure2, sciLibrary->procedure2, sciLibrary->procedure3);
+
+        int pN;
+        int pMatch = 0;
+        for(pN=0; pN < sciLibrary->procedure_number; pN++){
+            if(strcmp(input_options->option3, sciLibrary->procedures[pN]) == 0){
+                pMatch = 1;
+            }
         }
-        else{
-            requestServices(input_options);
+        if(pMatch == 0){
+            fprintf(stdout, "Sorry, the procedure %s does not support.\n", input_options->option3);
+            exit(1);
         }
+
+        /*proceed if no problem*/
+        requestServices(input_options);
     }
     else if(strcmp(argv[1], "execute") == 0){
        /* execute format:
@@ -116,33 +125,38 @@ int main(int argc, char *argv[]){
         input_options = argv2struct(argc, argv);
 
         if(strcmp(input_options->option1, sciLibrary->program_name) != 0){
-        printf("input_options->option1=%s.\n", input_options->option1);
-        printf("sciLibrary->program_name=%s.\n", sciLibrary->program_name);
             fprintf(stdout, "Hey, please try to request our flagship program: %s.\n", sciLibrary->program_name);
         }
         else if(strcmp(input_options->option2, "1") != 0 && strcmp(input_options->option2, "2") != 0){
             fprintf(stdout, "Sorry, the supported version number is 1 or 2.\n");
         }
-        else if(strcmp(input_options->option3, sciLibrary->procedure1) != 0 &&
-                strcmp(input_options->option3, sciLibrary->procedure2) != 0 &&
-                strcmp(input_options->option3, sciLibrary->procedure3) != 0 &&
-                strcmp(input_options->option3, sciLibrary->procedure4) != 0){
-            fprintf(stdout, "Sorry, the supported procedure are %s, %s, %s, and %s.\n", sciLibrary->procedure1,
-                    sciLibrary->procedure2, sciLibrary->procedure2, sciLibrary->procedure3);
+
+        int pN;
+        int pMatch = 0;
+        for(pN=0; pN < sciLibrary->procedure_number; pN++){
+            if(strcmp(input_options->option3, sciLibrary->procedures[pN]) == 0){
+                pMatch = 1;
+            }
         }
-        else if ( access(input_options->option4,F_OK) != 0 &&
+        if(pMatch == 0){
+            fprintf(stdout, "Sorry, the procedure %s does not support.\n", input_options->option3);
+            exit(1);
+        }
+
+        if ( access(input_options->option4,F_OK) != 0 &&
                   access(input_options->option4,R_OK) != 0){
-            fprintf(stdout, "Sorry, File %s does not exist or does not have read permission.\n", input_options->option4);
+            fprintf(stdout, "Sorry, directory %s does not exist or does not have read permission.\n", input_options->option4);
+            exit(1);
         }
         /*the result will write into the output file, which will be created if not exists*/
         else if(checkSpecialChar(input_options->option5) == 1){
             fprintf(stdout, "Sorry, File name %s is invalid.\n", input_options->option5);
+            exit(1);
         }
-        else{
-            /*request first before execute the service*/
-            requestServices(input_options);
-            executeServices(input_options);
-        }
+
+        /*request first before execute the service*/
+        requestServices(input_options);
+        //executeServices(input_options);
     }
     else{
         helpMiniGoogle();

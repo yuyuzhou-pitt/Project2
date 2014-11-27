@@ -51,12 +51,16 @@ Packet_Seq *executeResultEnd; //the execute reply end
 LoadLink *loadBalanceLinkHead; //to keep load balance
 LoadLink *loadBalanceLinkEnd; //to keep load balance
 
+RemoteProgram *(*libraryPtr)();
+
 int main(int argc, char *argv[]){
 
     if(argc > 1){
         fprintf(stderr, "USAGE: ./client (no input_options required)\n");
         exit(1);
     }
+
+    libraryPtr = getLibraryPtr(); // configurable library function
 
     /* start SRPC terminal */
     fprintf(stdout, "(client): please track log file for detail: %s\n", LOGFILE);
@@ -80,7 +84,7 @@ int main(int argc, char *argv[]){
     input_options = (OptionsStruct *)calloc(1, sizeof(OptionsStruct));
     struct Remote_Program_Struct *sciLibrary;
     sciLibrary = (struct Remote_Program_Struct *)malloc(sizeof(struct Remote_Program_Struct)); //Packet with Register_Service type Data
-    sciLibrary = programLibrary();
+    sciLibrary = (*libraryPtr)();
 
     int terminal = 1;
     int printPrompt = 1;
@@ -132,18 +136,20 @@ int main(int argc, char *argv[]){
                     fprintf(stdout, "Sorry, the supported version number is 1 or 2.\n");
                     continue;
                 }
-                else if(strcmp(input_options->option3, sciLibrary->procedure1) != 0 &&
-                        strcmp(input_options->option3, sciLibrary->procedure2) != 0 &&
-                        strcmp(input_options->option3, sciLibrary->procedure3) != 0 &&
-                        strcmp(input_options->option3, sciLibrary->procedure4) != 0){
-                    fprintf(stdout, "Sorry, the supported procedure are %s, %s, %s, and %s.\n", sciLibrary->procedure1,
-                            sciLibrary->procedure2, sciLibrary->procedure2, sciLibrary->procedure3);
+
+                int pN;
+                int pMatch = 0;
+                for(pN=0; pN < sciLibrary->procedure_number; pN++){
+                    if(strcmp(input_options->option3, sciLibrary->procedures[pN]) == 0){
+                        pMatch = 1;
+                    }
+                }
+                if(pMatch == 0){
+                    fprintf(stdout, "Sorry, the procedure %s does not support.\n", input_options->option3);
                     continue;
                 }
-                else{
-                    requestServices(input_options);
-                }
 
+                requestServices(input_options);
 
             }
             else if(strcmp(sub_command, "execute") == 0){
@@ -159,15 +165,20 @@ int main(int argc, char *argv[]){
                     fprintf(stdout, "Sorry, the supported version number is 1 or 2.\n");
                     continue;
                 }
-                else if(strcmp(input_options->option3, sciLibrary->procedure1) != 0 &&
-                        strcmp(input_options->option3, sciLibrary->procedure2) != 0 &&
-                        strcmp(input_options->option3, sciLibrary->procedure3) != 0 &&
-                        strcmp(input_options->option3, sciLibrary->procedure4) != 0){
-                    fprintf(stdout, "Sorry, the supported procedure are %s, %s, %s, and %s.\n", sciLibrary->procedure1,
-                            sciLibrary->procedure2, sciLibrary->procedure2, sciLibrary->procedure3);
+
+                int pN;
+                int pMatch = 0;
+                for(pN=0; pN < sciLibrary->procedure_number; pN++){
+                    if(strcmp(input_options->option3, sciLibrary->procedures[pN]) == 0){
+                        pMatch = 1;
+                    }
+                }
+                if(pMatch == 0){
+                    fprintf(stdout, "Sorry, the procedure %s does not support.\n", input_options->option3);
                     continue;
                 }
-                else if ( access(input_options->option4,F_OK) != 0 && 
+
+                if ( access(input_options->option4,F_OK) != 0 && 
                           access(input_options->option4,R_OK) != 0){
                     fprintf(stdout, "Sorry, File %s does not exist or does not have read permission.\n", input_options->option4);
                     continue;
@@ -176,19 +187,10 @@ int main(int argc, char *argv[]){
                     fprintf(stdout, "Sorry, File name %s is invalid.\n", input_options->option5);
                     continue;
                 }
-                //else if ( access(input_options->option5,F_OK) != 0 &&     
-                //          access(input_options->option5,W_OK) != 0){
-                //    fprintf(stdout, "Sorry, File %s does not exist or does not have write permission.\n", input_options->option5);
-                //    continue;
-                //}
-                else{
-                    /*request first before execute the service*/
-                    requestServices(input_options);
-                    //get server ip --hard coded as 127.0.0.1 now
-                    //get server port --hard coded as 5050 now
-                    //executeServices(input_options, "127.0.0.1", "5050"); // will get server IP and Port later
-                    executeServices(input_options);
-                }
+
+                /*request first before execute the service*/
+                requestServices(input_options);
+                executeServices(input_options);
 
             }
             else if(strcmp(sub_command, "null") != 0){
