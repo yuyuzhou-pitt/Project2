@@ -60,8 +60,6 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
-    libraryPtr = getLibraryPtr(); // configurable library function
-
     /* start SRPC terminal */
     fprintf(stdout, "(client): please track log file for detail: %s\n", LOGFILE);
     fprintf(stdout, "\n== WELCOME TO SRPC TERMINAL FOR CLIENT! ==\n");
@@ -82,9 +80,9 @@ int main(int argc, char *argv[]){
     memset(command_no_n, 0, sizeof(command_no_n));
     OptionsStruct *input_options;
     input_options = (OptionsStruct *)calloc(1, sizeof(OptionsStruct));
+
     struct Remote_Program_Struct *sciLibrary;
     sciLibrary = (struct Remote_Program_Struct *)malloc(sizeof(struct Remote_Program_Struct)); //Packet with Register_Service type Data
-    sciLibrary = (*libraryPtr)();
 
     int terminal = 1;
     int printPrompt = 1;
@@ -128,14 +126,25 @@ int main(int argc, char *argv[]){
                 /* register format:
                  * # request   <program-name> <version-number> <procedure>
                  */
-                if(strcmp(input_options->option1, sciLibrary->program_name) != 0){
-                    fprintf(stdout, "Hey, please try to request our flagship program: %s.\n", sciLibrary->program_name);
+
+                if(input_options->count < 4){
+                    fprintf(stderr, "Please provide program name, version number, and procedure name.\n");
+                    helpClient();
                     continue;
                 }
-                else if(strcmp(input_options->option2, "1") != 0 && strcmp(input_options->option2, "2") != 0){
-                    fprintf(stdout, "Sorry, the supported version number is 1 or 2.\n");
+
+                /*RemoteProgram *getLibraryPtr(char *program_name, char *version_number);*/
+                libraryPtr = getLibraryPtr(input_options->option1, input_options->option2); // configurable library function
+
+                if(libraryPtr == NULL){
+                    fprintf(stderr, "Wrong program name (%s) or version number (%s).\n",
+                            input_options->option1, input_options->option2);
+                    helpClient();
                     continue;
                 }
+
+                /*get procedure name*/
+                sciLibrary = (*libraryPtr)();
 
                 int pN;
                 int pMatch = 0;
@@ -145,26 +154,36 @@ int main(int argc, char *argv[]){
                     }
                 }
                 if(pMatch == 0){
-                    fprintf(stdout, "Sorry, the procedure %s does not support.\n", input_options->option3);
+                    fprintf(stderr, "Sorry, the procedure %s does not support.\n", input_options->option3);
                     continue;
                 }
 
                 requestServices(input_options);
-
             }
             else if(strcmp(sub_command, "execute") == 0){
                 //fprintf(stdout, "sub_command=%s.\n", sub_command);
-               /* execute format:
+                /* execute format:
                 * # execute   <program-name> <version-number> <procedure> <input-file> <output-file>
                 */
-                if(strcmp(input_options->option1, sciLibrary->program_name) != 0){
-                    fprintf(stdout, "Hey, please try to request our flagship program: %s.\n", sciLibrary->program_name);
+
+                if(input_options->count < 6){
+                    fprintf(stderr, "Please provide program name, version number, and procedure name.\n");
+                    helpClient();
                     continue;
                 }
-                else if(strcmp(input_options->option2, "1") != 0 && strcmp(input_options->option2, "2") != 0){
-                    fprintf(stdout, "Sorry, the supported version number is 1 or 2.\n");
+
+                /*RemoteProgram *getLibraryPtr(char *program_name, char *version_number);*/
+                libraryPtr = getLibraryPtr(input_options->option1, input_options->option2); // configurable library function
+
+                if(libraryPtr == NULL){
+                    fprintf(stderr, "Wrong program name (%s) or version number (%s).\n",
+                            input_options->option1, input_options->option2);
+                    helpClient();
                     continue;
                 }
+
+                /*get procedure name*/
+                sciLibrary = (*libraryPtr)();
 
                 int pN;
                 int pMatch = 0;
@@ -174,17 +193,21 @@ int main(int argc, char *argv[]){
                     }
                 }
                 if(pMatch == 0){
-                    fprintf(stdout, "Sorry, the procedure %s does not support.\n", input_options->option3);
+                    fprintf(stderr, "Sorry, the procedure %s does not support.\n", input_options->option3);
                     continue;
                 }
 
                 if ( access(input_options->option4,F_OK) != 0 && 
                           access(input_options->option4,R_OK) != 0){
-                    fprintf(stdout, "Sorry, File %s does not exist or does not have read permission.\n", input_options->option4);
+                    fprintf(stderr, "Sorry, File or directory %s does not exist or does not have read permission.\n", input_options->option4);
                     continue;
                 }
-                else if(checkSpecialChar(input_options->option5) == 1){
-                    fprintf(stdout, "Sorry, File name %s is invalid.\n", input_options->option5);
+                if(checkSpecialChar(input_options->option5) == 1){
+                    fprintf(stderr, "Sorry, File or directory name %s is invalid.\n", input_options->option5);
+                    continue;
+                }
+                else if(access(input_options->option5,F_OK) == 0 ){
+                    fprintf(stderr, "Sorry, File or directory name %s exists, please use a new name.\n", input_options->option5);
                     continue;
                 }
 

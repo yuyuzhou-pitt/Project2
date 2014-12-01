@@ -56,8 +56,6 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
-    libraryPtr = getLibraryPtr(); // configurable library function
-
     //executePacketSeq = (Packet_Seq *)malloc(sizeof(Packet_Seq));
     //executeResultSeq = (Packet_Seq *)malloc(sizeof(Packet_Seq));
     //executePacketSeq = initListSeq();
@@ -76,23 +74,25 @@ int main(int argc, char *argv[]){
     int sockfd;
     pthread_t sockserverid;
     pthread_create(&sockserverid, NULL, &sockserver, (void *)sockfd);
-    fprintf(stdout, "(server): socket server start up.\n");
+    fprintf(stderr, "(server): socket server start up.\n");
 
     /* start SRPC terminal */
-    fprintf(stdout, "(server): please track log file for detail: %s\n", LOGFILE);
-    fprintf(stdout, "\n== WELCOME TO SRPC TERMINAL FOR SERVER! ==\n");
-    fprintf(stdout, "\nEnter the commands 'help' for usage.\n\n");
+    fprintf(stderr, "(server): please track log file for detail: %s\n", LOGFILE);
+    fprintf(stderr, "\n== WELCOME TO SRPC TERMINAL FOR SERVER! ==\n");
+    fprintf(stderr, "\nEnter the commands 'help' for usage.\n\n");
     
     int rc;
     char command[64]; //, options[3][32];
     char command_no_n[64]; //, options[3][32];
     struct OptionsStruct *options;
     options = (struct OptionsStruct *)malloc(sizeof(struct OptionsStruct));
+    RemoteProgram *sciLibrary;
+    sciLibrary = (RemoteProgram *)malloc(sizeof(RemoteProgram)); //Packet with Register_Service type Data
     int terminal = 1;
     char *sub_command; // sub-command and options
     while(terminal == 1){
-        //fprintf(stdout, "(server: %s)# ", router->router_id);
-        fprintf(stdout, "(server)# ");
+        //fprintf(stderr, "(server: %s)# ", router->router_id);
+        fprintf(stderr, "(server)# ");
 	fflush(stdin);
 	if (fgets(command, sizeof(command), stdin) != NULL ){
             /*convert input as array, such as:
@@ -119,19 +119,23 @@ int main(int argc, char *argv[]){
             else if(strcmp(sub_command, "register") == 0){
                 /* register format:
                  * # server register <program-name> <version-number> */
-                struct Remote_Program_Struct *sciLibrary;
-                sciLibrary = (struct Remote_Program_Struct *)malloc(sizeof(struct Remote_Program_Struct)); //Packet with Register_Service type Data
-                sciLibrary = (*libraryPtr)();
-                if(strcmp(options->option1, sciLibrary->program_name) != 0){
-                    fprintf(stdout, "Hey, please try to register our flagship program: %s.\n", sciLibrary->program_name);
-                    free(sciLibrary);
+                if(options->count < 3){
+                    fprintf(stderr, "Please provide program name and version number.\n");
+                    helpServer();
                     continue;
                 }
-                else if(strcmp(options->option2, sciLibrary->version_number) != 0){
-                    fprintf(stdout, "Sorry, the supported version number is %s.\n", sciLibrary->version_number);
+
+                //RemoteProgram *getLibraryPtr(char *program_name, char *version_number);
+                libraryPtr = getLibraryPtr(options->option1, options->option2); // configurable library function
+
+                if(libraryPtr == NULL){
+                    fprintf(stderr, "Wrong program name (%s) or version number (%s).\n", 
+                            options->option1, options->option2);
+                    helpServer();
                     continue;
                 }
                 else{
+                    sciLibrary = (*libraryPtr)();
                     registerServices(options);
                 }
             }

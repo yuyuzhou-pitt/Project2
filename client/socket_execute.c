@@ -15,6 +15,7 @@
 #include <pthread.h>
 #include <setjmp.h>
 #include <signal.h>
+#include <dirent.h>
 
 #include "../lib/unprtt.h"
 
@@ -42,6 +43,9 @@
 
 #define WINDOW_SIZE 4 // windows size for sliding window
 
+#define NTHREADS 20 
+pthread_t connect_id[NTHREADS]; // Thread pool
+
 char hostname[1024]; // local hostname and domain
 char addrstr[100]; // local ip address (eth0)
 
@@ -57,15 +61,16 @@ static int      rttinit = 0;
 static sigjmp_buf jmpbuf;
 
 static void sig_alrm(int signo){
-  siglongjmp(jmpbuf,1);
+    siglongjmp(jmpbuf,1);
 }
 
-/* thread for lsrp-client */
-void *execlient(void *arg){
+/*handle the server connection*/
+//void connectServer(void *arg){
+void connectServer(OptionsStruct *exec_options){
 
-    struct OptionsStruct *exec_options;
-    exec_options = (struct OptionsStruct *)malloc(sizeof(struct OptionsStruct));
-    exec_options = (struct OptionsStruct *) arg;
+    //OptionsStruct *exec_options;
+    //exec_options = (OptionsStruct *)malloc(sizeof(OptionsStruct));
+    //exec_options = (OptionsStruct *)arg;
 
     int clientfd; //,sendbytes,recvbytes;
     struct hostent *host;
@@ -81,7 +86,7 @@ void *execlient(void *arg){
     int wait_count = 0;
 
     /*do NOT run multiple command execute within 3 seconds*/
-    while(wait_count < 3 && (host = gethostbyname(exec_remote_ipstr)) == NULL ) { // got the remote server
+    while(wait_count < 3 && (host = gethostbyname(exec_options->remote_ipstr)) == NULL ) { // got the remote server
         //perror("gethostbyname");
         //exit(-1);
         sleep(1);
@@ -90,7 +95,7 @@ void *execlient(void *arg){
 
     if(host == NULL ) { // got the remote server
         //fprintf(stdout, "No server found, please try again.\n");
-        pthread_exit(0);
+        return -1;
     }
 
     //printf("exec_remote_ipstr=%s.\n", exec_remote_ipstr);
@@ -100,7 +105,7 @@ void *execlient(void *arg){
        
     /*parameters for sockaddr_in*/
     sockaddr.sin_family = AF_INET;
-    sockaddr.sin_port = htons(atoi(exec_remote_port));
+    sockaddr.sin_port = htons(atoi(exec_options->remote_port));
     sockaddr.sin_addr = *((struct in_addr *)host->h_addr);
     bzero(&(sockaddr.sin_zero), 8);
 
@@ -133,7 +138,7 @@ void *execlient(void *arg){
     char trans_id[32]; //record the transaction id, in case multiple sequences
     int time1 = getTimeStamp();
     printf("\n(TS:%d) Start marshaling from the input file %s.\n\n", time1, exec_options->option4);
-    sequence_execute = Execute_stub(exec_options, addrstr, exec_remote_ipstr, trans_id); // msg to be sent out
+    sequence_execute = Execute_stub(exec_options, addrstr, exec_options->remote_ipstr, trans_id); // msg to be sent out
     seq_cursor = sequence_execute->next;
 
     pthread_mutex_lock(&execute_mutex);
@@ -205,8 +210,11 @@ sendagain:
 
         sendExecuteAck(clientfd, sockaddr, packet_reply);
 
-        printf("\n(TS:%d) Writing result to output file %s.\n", getTimeStamp(), exec_options->option5);
-        writeResultSeq(executeResultSeq, exec_options->option5); //option5 is the output file
+        /*if result data is fle, then write result into file*/
+        if(packet_ack->Data.data_is_file_or_dir == 0){
+            printf("\n(TS:%d) Writing result to output file %s.\n", getTimeStamp(), exec_options->option5);
+            writeResultSeq(executeResultSeq, exec_options->option5); //option5 is the output file
+        }
 
         int time2 = getTimeStamp();
         printf("\n(TS:%d) Congratulations! RPC %s completed successfully.\n\n", 
@@ -230,11 +238,68 @@ sendagain:
     //free(packet_ack);
     //free(exec_options);
     close(clientfd);
+    //pthread_exit(0);
+}
+
+/* thread for lsrp-client */
+void *execlient(void *arg){
+
+    OptionsStruct *exec_options;
+    exec_options = (OptionsStruct *)malloc(sizeof(OptionsStruct));
+    exec_options = (OptionsStruct *)arg;
+
+    /*wait until the client request get the result*/
+    int wait_count = 0;
+
+    /*do NOT run multiple command execute within 5 seconds*/
+    while(wait_count < 5000 && requested_servers->response_number <= 0) {
+        usleep(1000);
+        wait_count ++;
+    };
+
+    printf("requested_servers->response_number=%d.\n", requested_servers->response_number);
+    /*client decide which action to execute*/
+    snprintf(exec_options->action, sizeof(exec_options->action), "Split");
+
+    DIR *in_dp;
+    struct dirent *in_ep;
+
+    in_dp = opendir (exec_options->option4);
+    int file_count = 0;
+    int hash_index = 0;
+    int i_thread = 0; // Thread iterator
+    if (in_dp != NULL){
+        while (in_ep = readdir (in_dp)){
+            if (i_thread == NTHREADS){
+                i_thread = 0;
+            }
+
+            printf("in_ep->d_name=%s.\n", in_ep->d_name);
+            if(strcmp(in_ep->d_name, ".") == 0 || strcmp(in_ep->d_name, "..") == 0){
+                continue;
+            }
+            hash_index = file_count % requested_servers->response_number;
+            snprintf(exec_options->option4, sizeof(exec_options->option4), in_ep->d_name);
+            snprintf(exec_options->remote_ipstr, sizeof(exec_options->remote_ipstr), 
+                     requested_servers->portMapperTable[hash_index].server_ip);
+            snprintf(exec_options->remote_port, sizeof(exec_options->remote_port), 
+                     requested_servers->portMapperTable[hash_index].port_number);
+
+            connectServer(exec_options);
+            //pthread_create(&connect_id[i_thread++], NULL, &connectServer, (void **)exec_options);
+
+            file_count ++;
+        }
+        (void) closedir (in_dp);
+    }
+    else
+        perror ("Couldn't open the directory");
+
     pthread_exit(0);
 }
 
 // start a client thread to execute the services from server
-int executeServices(struct OptionsStruct *exec_options){
+int executeServices(OptionsStruct *exec_options){
     char logmsg[128];
     pthread_t execlientid;
     pthread_create(&execlientid, NULL, &execlient, (void **)exec_options);

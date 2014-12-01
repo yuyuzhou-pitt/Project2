@@ -12,6 +12,8 @@
 #define FLOATMTU 128
 #define CHARMTU 512
 
+#define SPLIT_TMP_DIR ".split_tmp_dir"
+
 /* client request will set these two params (for client execute) */
 extern char exec_remote_ipstr[1024];
 extern char exec_remote_port[6];
@@ -85,16 +87,18 @@ typedef struct Request_Response{
     PortMapperTable portMapperTable[255];
 }Request_Reply;
 
+extern Request_Reply *requested_servers; // to store all the requested servers, for execute use
+
 union ParameterData{
     int data_int[INTMTU]; //up to 100*100 matrix. 
     float data_float [FLOATMTU];
-    char str[CHARMTU];
+    char data_str[CHARMTU];
 };
 
 union ResponseData{
-    int data_int[10000];
-    float data_float[5000];
-    char str[20000];
+    int data_int[INTMTU];
+    float data_float[FLOATMTU];
+    char data_str[CHARMTU];
 };
 
 typedef struct Execute_Sevice{
@@ -105,6 +109,8 @@ typedef struct Execute_Sevice{
     int end_flag; // wheather this packet is the last one for one transaction. 
     uint32_t seq; //sequence number, start from 0 
     uint32_t ts; //timestamp
+    int data_is_file_or_dir; // 0 is file, for multiply and etc; 1 is dir, for minigoogle
+    char exec_action[30]; // Split, Index, or Search
     int num_parameter;
     int para1_type; //int:0, float:1, char:2; default is 0
     int para1_dimension;
@@ -123,8 +129,10 @@ typedef struct Execute_Ack{
     char procedure_name[30];
     int transaction_id;
     int end_flag; 
-    uint32_t seq; // ACK sequenc. ACK5 means, Packet 0~4 is received.  
+    uint32_t seq; // ACK sequence. ACK5 means, Packet 0~4 is received.  
     uint32_t ts; //timestamp
+    int data_is_file_or_dir; // 0 is file, for multiply and etc; 1 is dir, for minigoogle
+    char exec_action[30]; // Split, Index, or Search
 }Execute_Ack;
 
 typedef struct Execute_Respons{ 
@@ -135,6 +143,8 @@ typedef struct Execute_Respons{
     int end_flag; // wheather this packet is the last one for one transaction. 
     uint32_t seq; 
     uint32_t ts;
+    int data_is_file_or_dir; // 0 is file, for multiply and etc; 1 is dir, for minigoogle
+    char exec_action[30]; // Split, Index, or Search
     int num_parameter;
     int respons_type;
     int respons_dimension;

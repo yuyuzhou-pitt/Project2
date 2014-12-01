@@ -28,7 +28,10 @@
 #define BUFFER_SIZE 1024
 #define READ_PORT_INTERVAL 20 // busy wait interval to read port files
 
+#define NTHREADS 20 
 #define HELLO_INTERVAL 40 // in seconds
+
+pthread_t connect_id[NTHREADS]; // Thread pool
 
 char hostname[1024]; // local hostname and domain
 char addrstr[100]; // local ip address (eth0)
@@ -37,6 +40,7 @@ char addrstr[100]; // local ip address (eth0)
  * * client request will set this two viriables from request reply*/
 char exec_remote_ipstr[1024];
 char exec_remote_port[6];
+Request_Reply *requested_servers;
 
 pthread_mutex_t request_mutex;
 
@@ -144,7 +148,8 @@ void *requestclient(void *arg){
     if(strcmp(packet_reply->packet_type, "011") == 0){
         /*print response only when reuqest service only*/
         //#ifdef REQUEST_SERV
-        printRequestReply(packet_reply, exec_remote_ipstr, exec_remote_port);        
+        requested_servers = (Request_Reply *)calloc(1, sizeof(Request_Reply));
+        printRequestReply(packet_reply, requested_servers, exec_remote_ipstr, exec_remote_port);        
         //fprintf(stdout, "\nChoose to use service on %s with port %s for load balance.\n\n",
         //        exec_remote_ipstr, exec_remote_port);
 

@@ -23,12 +23,15 @@ Packet *genExecuteAck(Packet *execute_serv){
     snprintf(execute_ack->Data.version_number, sizeof(execute_ack->Data.version_number), "%s", execute_serv->Data.version_number);
     snprintf(execute_ack->Data.program_name, sizeof(execute_ack->Data.program_name), "%s", execute_serv->Data.program_name);
     snprintf(execute_ack->Data.procedure_name, sizeof(execute_ack->Data.procedure_name), "%s", execute_serv->Data.procedure_name);
+
+    execute_ack->Data.data_is_file_or_dir = execute_serv->Data.data_is_file_or_dir;
     execute_ack->Data.transaction_id = execute_serv->Data.transaction_id ;
     execute_ack->Data.end_flag = execute_serv->Data.end_flag;
     execute_ack->Data.seq = execute_serv->Data.seq + 1;
 
     /*checksum*/
-    snprintf(execute_ack->PacketChecksum, sizeof(execute_ack->PacketChecksum), "%d", chksum_crc32(((unsigned char*) execute_ack) , sizeof(*execute_ack)));
+    snprintf(execute_ack->PacketChecksum, sizeof(execute_ack->PacketChecksum),
+             "%d", chksum_crc32(((unsigned char*) execute_ack) , sizeof(*execute_ack)));
 
     return execute_ack;
 }

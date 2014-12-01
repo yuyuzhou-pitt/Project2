@@ -60,8 +60,6 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
-    libraryPtr = getLibraryPtr(); // configurable library function
-
     /*initial the global seq for execute client thread*/
     initExecuteSeq();
     /*initial the load balance link for client request service use*/
@@ -69,7 +67,6 @@ int main(int argc, char *argv[]){
 
     struct Remote_Program_Struct *sciLibrary;
     sciLibrary = (struct Remote_Program_Struct *)malloc(sizeof(struct Remote_Program_Struct)); //Packet with Register_Service type Data
-    sciLibrary = (*libraryPtr)();
 
     OptionsStruct *input_options;
     //input_options = (OptionsStruct *)calloc(1, sizeof(OptionsStruct));
@@ -89,14 +86,18 @@ int main(int argc, char *argv[]){
 
         input_options = argv2struct(argc, argv);
 
-        if(strcmp(input_options->option1, sciLibrary->program_name) != 0){
-            fprintf(stdout, "Hey, please try to request our flagship program: %s.\n", sciLibrary->program_name);
+        //RemoteProgram *getLibraryPtr(char *program_name, char *version_number);
+        libraryPtr = getLibraryPtr(input_options->option1, input_options->option2); // configurable library function
+
+        if(libraryPtr == NULL){
+            fprintf(stderr, "Wrong program name (%s) or version number (%s).\n",
+                    input_options->option1, input_options->option2);
+            helpMiniGoogle();
             exit(1);
         }
-        else if(strcmp(input_options->option2, sciLibrary->version_number) != 0){
-            fprintf(stdout, "Sorry, the supported version number is %d.\n", sciLibrary->version_number);
-            exit(1);
-        }
+
+        /*get library detail when program name and version number are correct.*/
+        sciLibrary = (*libraryPtr)();
 
         int pN;
         int pMatch = 0;
@@ -106,7 +107,13 @@ int main(int argc, char *argv[]){
             }
         }
         if(pMatch == 0){
-            fprintf(stdout, "Sorry, the procedure %s does not support.\n", input_options->option3);
+            fprintf(stderr, "Sorry, the procedure %s does not support.\n", input_options->option3);
+            fprintf(stderr, "Please use one of the procedures: ");
+            int pN;
+            for(pN=0;pN < (sciLibrary->procedure_number)-1; pN++){
+                fprintf(stderr, "%s, ", sciLibrary->procedures[pN]);
+            }
+            fprintf(stderr, "%s.\n", sciLibrary->procedures[(sciLibrary->procedure_number)-1]);
             exit(1);
         }
 
@@ -124,12 +131,18 @@ int main(int argc, char *argv[]){
 
         input_options = argv2struct(argc, argv);
 
-        if(strcmp(input_options->option1, sciLibrary->program_name) != 0){
-            fprintf(stdout, "Hey, please try to request our flagship program: %s.\n", sciLibrary->program_name);
+        //RemoteProgram *getLibraryPtr(char *program_name, char *version_number);
+        libraryPtr = getLibraryPtr(input_options->option1, input_options->option2); // configurable library function
+
+        if(libraryPtr == NULL){
+            fprintf(stderr, "Wrong program name (%s) or version number (%s).\n",
+                    input_options->option1, input_options->option2);
+            helpMiniGoogle();
+            exit(1);
         }
-        else if(strcmp(input_options->option2, "1") != 0 && strcmp(input_options->option2, "2") != 0){
-            fprintf(stdout, "Sorry, the supported version number is 1 or 2.\n");
-        }
+
+        /*get library detail when program name and version number are correct.*/
+        sciLibrary = (*libraryPtr)();
 
         int pN;
         int pMatch = 0;
@@ -139,24 +152,33 @@ int main(int argc, char *argv[]){
             }
         }
         if(pMatch == 0){
-            fprintf(stdout, "Sorry, the procedure %s does not support.\n", input_options->option3);
+            fprintf(stderr, "Sorry, the procedure (%s) does not support.\n", input_options->option3);
+            fprintf(stderr, "Please use one of the procedures: ");
+            int pN;
+            for(pN=0;pN < (sciLibrary->procedure_number)-1; pN++){
+                fprintf(stderr, "%s, ", sciLibrary->procedures[pN]);
+            }
+            fprintf(stderr, "%s.\n", sciLibrary->procedures[(sciLibrary->procedure_number)-1]);
             exit(1);
         }
 
         if ( access(input_options->option4,F_OK) != 0 &&
                   access(input_options->option4,R_OK) != 0){
-            fprintf(stdout, "Sorry, directory %s does not exist or does not have read permission.\n", input_options->option4);
+            fprintf(stderr, "Sorry, Source file or directory %s does not exist or does not have read permission.\n", input_options->option4);
             exit(1);
         }
-        /*the result will write into the output file, which will be created if not exists*/
-        else if(checkSpecialChar(input_options->option5) == 1){
-            fprintf(stdout, "Sorry, File name %s is invalid.\n", input_options->option5);
+        if(checkSpecialChar(input_options->option5) == 1){
+            fprintf(stderr, "Sorry, Target file or directory %s is invalid.\n", input_options->option5);
+            exit(1);
+        }
+        else if(access(input_options->option5,F_OK) == 0 ){
+            fprintf(stderr, "Sorry, Target file or directory %s exists, please use a new one.\n", input_options->option5);
             exit(1);
         }
 
         /*request first before execute the service*/
         requestServices(input_options);
-        //executeServices(input_options);
+        executeServices(input_options); // execute Map Reduce services, for minigoogle
     }
     else{
         helpMiniGoogle();

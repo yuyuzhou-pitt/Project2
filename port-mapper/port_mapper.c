@@ -50,7 +50,7 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
-    libraryPtr = getLibraryPtr(); // configurable library function
+    //libraryPtr = getLibraryPtr(); // configurable library function
 
     /*initial the load balance link for client request service use*/
     initLoadSeq();

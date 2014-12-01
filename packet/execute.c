@@ -9,9 +9,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <time.h>
+#include <dirent.h>
 
 #define EXECUTE_SERV 1
 #include "packet.h"
+#include "mapreduce.h"
 
 #include "checksum.h"
 #include "../lib/liblog.h"
@@ -74,7 +76,7 @@ Execute command format:
 Packet_Seq *genExecuteServ(OptionsStruct *options, char *client_ip, char *server_ip, char *trans_id){
 
     struct Remote_Program_Struct *sciLibrary;
-    sciLibrary = (struct Remote_Program_Struct *)malloc(sizeof(struct Remote_Program_Struct)); //Packet with Register_Service type Data
+    //sciLibrary = (struct Remote_Program_Struct *)malloc(sizeof(struct Remote_Program_Struct)); //Packet with Register_Service type Data
     sciLibrary = (*libraryPtr)();
 
     Packet execPkt;
@@ -86,151 +88,174 @@ Packet_Seq *genExecuteServ(OptionsStruct *options, char *client_ip, char *server
     snprintf(execPkt.Data.program_name, sizeof(execPkt.Data.program_name), "%s", options->option1);
     snprintf(execPkt.Data.version_number, sizeof(execPkt.Data.version_number), "%s", options->option2);
     snprintf(execPkt.Data.procedure_name, sizeof(execPkt.Data.procedure_name), "%s", options->option3);
+    snprintf(execPkt.Data.exec_action, sizeof(execPkt.Data.exec_action), "%s", options->action);
 
     srand(time(NULL));
     execPkt.Data.transaction_id = rand(); // share the same transaction_id in the seq
     /*store the transcation id, in case there are multiple secquence in the link*/
     snprintf(trans_id, 32, "%d", execPkt.Data.transaction_id);
+
     execPkt.Data.num_parameter = 0; //Multiply has up to 2 parameters
     execPkt.Data.end_flag = 0; // default is 0
-    execPkt.Data.para1_type = 0; // default is int (0)
-    execPkt.Data.para2_type = 0; // default is int (0)
+    execPkt.Data.para1_type = sciLibrary->data_type; // defined in lib/libscientific.c
+    execPkt.Data.para2_type = sciLibrary->data_type; // defined in lib/libscientific.c
+    execPkt.Data.data_is_file_or_dir = sciLibrary->data_is_file_or_dir;
 
-    int lineIndex = 0;
-    int arrayIndex = 0; 
-    int nPerLine = 0; // the number of integers per line
-    int pktSeq = 0; // start from 0
+    // when it's dir, only one packet sent out
+    if(sciLibrary->data_is_file_or_dir == 1){
+        execPkt.Data.num_parameter = 1; //1 parameter, send dir only
+        execPkt.Data.end_flag = 1; //only one packet needed
+        snprintf(execPkt.Data.para_data.data_str, sizeof(execPkt.Data.para_data.data_str), "%s", options->option4);
+        //snprintf(execPkt.Data.para_data.data_str, sizeof(execPkt.Data.para_data.data_str),
+        //         "%s, %s", options->option4, options->option5);
 
-    FILE *in_fp;
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    int fcerr = 0;
+        /*checksum*/
+        snprintf(execPkt.PacketChecksum, sizeof(execPkt.PacketChecksum),
+                 "%d", chksum_crc32((unsigned char*) &execPkt, sizeof(execPkt)));
 
-    if ((in_fp = fopen(options->option4,"r")) < 0){
-        char logmsg[128]; snprintf(logmsg, sizeof(logmsg), "readfile: Failed to open file: %s\n", options->option4);
-        logging(LOGFILE, logmsg);
-        return executePacketSeq;
+        /*enqueue the packet*/
+        appendListSeq(executePacketSeq, execPkt);
     }
+    // when it's file, read file line by line
+    else if(sciLibrary->data_is_file_or_dir == 0){
 
-    if (strcmp(options->option3, sciLibrary->procedure1) == 0 || //Multiply
-        /* example [3,4]*[4,2]
-        * 3 4
-        * 3 6 7 5 
-        * 3 5 6 2 
-        * 9 1 2 7 
-        * 4 2
-        * 0 9 
-        * 3 6 
-        * 0 6 
-        * 2 6 
-        */
-        strcmp(options->option3, sciLibrary->procedure2) == 0 || //Sort
-        strcmp(options->option3, sciLibrary->procedure3) == 0 || //Min
-        strcmp(options->option3, sciLibrary->procedure4) == 0) { //Max
-        /*example
-        * 20
-        * 83 86 77 15 93 35 86 92 49 21 62 27 90 59 63 26 40 26 72 36
-        */ 
+        int lineIndex = 0;
+        int arrayIndex = 0; 
+        int nPerLine = 0; // the number of integers per line
+        int pktSeq = 0; // start from 0
+    
+        FILE *in_fp;
+        char *line = NULL;
+        size_t len = 0;
+        ssize_t read;
+        int fcerr = 0;
 
-        int isEOF = 0; //read the end of the file
-        int start_n = 0; //prevent data_int over flow, control the convert size in str2IntArray
-        int data_int_full = 0; //packet data_int is full, ready to enqueue
-        char line_no_n[10240]; //the length per line
-        while ((read = getline(&line, &len, in_fp)) != -1 || isEOF == 0) {
-            snprintf(line_no_n, strlen(line), "%s", line);
-            //printf("%s", line);
-            /*provide the chance to create packet if is end of file*/
-            if(read == -1){
-                execPkt.Data.end_flag = 1;
-                isEOF = 1; 
-            }
-
-            /* add split integers into temp int array*/
-            //printf("start_n=%d ", start_n);
-            nPerLine = str2IntArray(execPkt.Data.para_data.data_int, INTMTU, arrayIndex, line_no_n, start_n);
-            //printf("arrarIndex+nPerLine=%d+%d.\n", arrayIndex, nPerLine);
-
-
-            /*read the parameter 1 dimension length*/
-            if(lineIndex == 0){
-                execPkt.Data.para1_dimension = nPerLine;
-                execPkt.Data.para1_dimen1_len = execPkt.Data.para_data.data_int[arrayIndex]; // 0 here
-                if(nPerLine == 2){
-                    execPkt.Data.para1_dimen2_len = execPkt.Data.para_data.data_int[arrayIndex+1]; // 1 here
-                }
-                execPkt.Data.num_parameter++;
-            }
-            /*read the parameter 2 dimension length*/
-            if(lineIndex == execPkt.Data.para1_dimen1_len + 1){
-                execPkt.Data.para2_dimension = nPerLine;
-                execPkt.Data.para2_dimen1_len = execPkt.Data.para_data.data_int[arrayIndex];
-                if(nPerLine == 2){
-                    execPkt.Data.para2_dimen2_len = execPkt.Data.para_data.data_int[arrayIndex+1];
-                }
-                execPkt.Data.num_parameter++;
-            }
-
-            /*para_data is full in the middle of line, read the line again for next packet*/
-            if(arrayIndex + nPerLine > INTMTU){
-                start_n = INTMTU - arrayIndex; // next start index for line
-                arrayIndex = 0; // start from begining for data_int
-                data_int_full = 1;
-                if(in_fp){
-                    fseek(in_fp, -read-1, SEEK_CUR); // seek backward 1 line from the current pos
-                }
-            }
-            /*para_data is full in the end of line*/
-            else if(arrayIndex + nPerLine == INTMTU){
-                if (nPerLine != 0) {
-                   start_n = 0; // reset line start index
-                   lineIndex++;
-                }
-                arrayIndex = 0; // start from begining for data_int
-                data_int_full = 1;
-            }
-            /*para_data is not full*/
-            else{
-                if (nPerLine != 0){ 
-                    arrayIndex = arrayIndex + nPerLine - start_n;
-                    start_n = 0; // reset line start index
-                    lineIndex++;
-                }
-                data_int_full = 0; //reset full flag
-            }
-
-            /* create packet if:
-             * a. is end of file, or
-             * b. the execPkt.Data.para_data.data_int is full */
-            if(isEOF == 1 || data_int_full == 1){
-                /*DEBUG: print packet data_int*/
-                /*int kkk;
-                for(kkk=0;kkk<INTMTU;kkk++){
-                    printf("%d ", execPkt.Data.para_data.data_int[kkk]);
-                }
-                */
-
-                execPkt.Data.seq = pktSeq ++; 
-                /*checksum*/
-                snprintf(execPkt.PacketChecksum, sizeof(execPkt.PacketChecksum), 
-                         "%d", chksum_crc32((unsigned char*) &execPkt, sizeof(execPkt)));
-
-                /*enqueue the packet*/
-                appendListSeq(executePacketSeq, execPkt);
-
-                //free(execPkt.Data.para_data.data_int);
-            }
-        }
-
-    }
-
-    if(in_fp){
-        if( (fcerr = fclose(in_fp)) != 0 ){
-            char logmsg[128]; snprintf(logmsg, sizeof(logmsg), "closefile: Failed to close file: %s. Error <%d>.\n", options->option4, fcerr);
+        if ((in_fp = fopen(options->option4,"r")) < 0){
+            char logmsg[128]; snprintf(logmsg, sizeof(logmsg), "readfile: Failed to open file: %s\n", options->option4);
             logging(LOGFILE, logmsg);
+            return executePacketSeq;
         }
-    }
+    
+        if (strcmp(options->option3, sciLibrary->procedure1) == 0 || //Multiply
+            /* example [3,4]*[4,2]
+            * 3 4
+            * 3 6 7 5 
+            * 3 5 6 2 
+            * 9 1 2 7 
+            * 4 2
+            * 0 9 
+            * 3 6 
+            * 0 6 
+            * 2 6 
+            */
+            strcmp(options->option3, sciLibrary->procedure2) == 0 || //Sort
+            strcmp(options->option3, sciLibrary->procedure3) == 0 || //Min
+            strcmp(options->option3, sciLibrary->procedure4) == 0) { //Max
+            /*example
+            * 20
+            * 83 86 77 15 93 35 86 92 49 21 62 27 90 59 63 26 40 26 72 36
+            */ 
+    
+            int isEOF = 0; //read the end of the file
+            int start_n = 0; //prevent data_int over flow, control the convert size in str2IntArray
+            int data_int_full = 0; //packet data_int is full, ready to enqueue
+            char line_no_n[10240]; //the length per line
+            while ((read = getline(&line, &len, in_fp)) != -1 || isEOF == 0) {
+                snprintf(line_no_n, strlen(line), "%s", line);
+                //printf("%s", line);
+                /*provide the chance to create packet if is end of file*/
+                if(read == -1){
+                    execPkt.Data.end_flag = 1;
+                    isEOF = 1; 
+                }
+    
+                /* add split integers into temp int array*/
+                //printf("start_n=%d ", start_n);
+                nPerLine = str2IntArray(execPkt.Data.para_data.data_int, INTMTU, arrayIndex, line_no_n, start_n);
+                //printf("arrarIndex+nPerLine=%d+%d.\n", arrayIndex, nPerLine);
+    
+    
+                /*read the parameter 1 dimension length*/
+                if(lineIndex == 0){
+                    execPkt.Data.para1_dimension = nPerLine;
+                    execPkt.Data.para1_dimen1_len = execPkt.Data.para_data.data_int[arrayIndex]; // 0 here
+                    if(nPerLine == 2){
+                        execPkt.Data.para1_dimen2_len = execPkt.Data.para_data.data_int[arrayIndex+1]; // 1 here
+                    }
+                    execPkt.Data.num_parameter++;
+                }
+                /*read the parameter 2 dimension length*/
+                if(lineIndex == execPkt.Data.para1_dimen1_len + 1){
+                    execPkt.Data.para2_dimension = nPerLine;
+                    execPkt.Data.para2_dimen1_len = execPkt.Data.para_data.data_int[arrayIndex];
+                    if(nPerLine == 2){
+                        execPkt.Data.para2_dimen2_len = execPkt.Data.para_data.data_int[arrayIndex+1];
+                    }
+                    execPkt.Data.num_parameter++;
+                }
+    
+                /*para_data is full in the middle of line, read the line again for next packet*/
+                if(arrayIndex + nPerLine > INTMTU){
+                    start_n = INTMTU - arrayIndex; // next start index for line
+                    arrayIndex = 0; // start from begining for data_int
+                    data_int_full = 1;
+                    if(in_fp){
+                        fseek(in_fp, -read-1, SEEK_CUR); // seek backward 1 line from the current pos
+                    }
+                }
+                /*para_data is full in the end of line*/
+                else if(arrayIndex + nPerLine == INTMTU){
+                    if (nPerLine != 0) {
+                       start_n = 0; // reset line start index
+                       lineIndex++;
+                    }
+                    arrayIndex = 0; // start from begining for data_int
+                    data_int_full = 1;
+                }
+                /*para_data is not full*/
+                else{
+                    if (nPerLine != 0){ 
+                        arrayIndex = arrayIndex + nPerLine - start_n;
+                        start_n = 0; // reset line start index
+                        lineIndex++;
+                    }
+                    data_int_full = 0; //reset full flag
+                }
+    
+                /* create packet if:
+                 * a. is end of file, or
+                 * b. the execPkt.Data.para_data.data_int is full */
+                if(isEOF == 1 || data_int_full == 1){
+                    /*DEBUG: print packet data_int*/
+                    /*int kkk;
+                    for(kkk=0;kkk<INTMTU;kkk++){
+                        printf("%d ", execPkt.Data.para_data.data_int[kkk]);
+                    }
+                    */
+    
+                    execPkt.Data.seq = pktSeq ++; 
+                    /*checksum*/
+                    snprintf(execPkt.PacketChecksum, sizeof(execPkt.PacketChecksum), 
+                             "%d", chksum_crc32((unsigned char*) &execPkt, sizeof(execPkt)));
+    
+                    /*enqueue the packet*/
+                    appendListSeq(executePacketSeq, execPkt);
+    
+                    //free(execPkt.Data.para_data.data_int);
+                }
+            }
+    
+        }
+    
+        if(in_fp){
+            if( (fcerr = fclose(in_fp)) != 0 ){
+                char logmsg[128]; 
+                snprintf(logmsg, sizeof(logmsg), "closefile: Failed to close file: %s. Error <%d>.\n", options->option4, fcerr);
+                logging(LOGFILE, logmsg);
+            }
+        }
 
+    }
     free(sciLibrary);
     return executePacketSeq;
 }
@@ -264,10 +289,11 @@ int calcResult(OptionsStruct *result_options, char *client_ip, char *server_ip, 
     m = n = l = 0;
     int i=0, j;
     int *a,*b,*c,*d;
-    /*set below parameters for once, then decide which procedure to calculate the result*/
-    // use the last node, in case 
-    // 1. it's an empty link
-    // 2. the para2_dimen2_len is not set yet
+    /*set below parameters for once, then decide which procedure to calculate the result
+    * use the last node, in case 
+    * 1. it's an empty link
+    * 2. the para2_dimen2_len is not set yet
+    */
     while(r->next!=r){
         t = t->next;
         r = r->next;
@@ -280,6 +306,7 @@ int calcResult(OptionsStruct *result_options, char *client_ip, char *server_ip, 
         snprintf(result_options->option1, sizeof(result_options->option1), "%s", t->cur.Data.program_name);
         snprintf(result_options->option2, sizeof(result_options->option2), "%s", t->cur.Data.version_number);
         snprintf(result_options->option3, sizeof(result_options->option3), "%s", t->cur.Data.procedure_name);
+        snprintf(result_options->option4, sizeof(result_options->option4), "%s", t->cur.Data.procedure_name);
 
         if(strcmp(t->cur.Data.procedure_name,sciLibrary->procedure1)==0) choice=0; // Multiply
         else if(strcmp(t->cur.Data.procedure_name,sciLibrary->procedure2)==0) choice=1; //Sort
@@ -433,6 +460,32 @@ int calcResult(OptionsStruct *result_options, char *client_ip, char *server_ip, 
     free(sciLibrary);
     fclose(result_fp);
     return 0;
+}
+
+/*the function to execute the service, such as Multipy, or Index, or Search*/
+int executeResult(OptionsStruct *result_options, char *client_ip, char *server_ip, Packet_Seq *recv_exec_seq){
+    Packet_Seq *t, *r;
+    t = recv_exec_seq;
+    r = recv_exec_seq->next;
+
+    /*set below parameters for once, then decide which procedure to calculate the result
+    * use the last node, in case 
+    * 1. it's an empty link
+    * 2. the para2_dimen2_len is not set yet
+    */
+    while(r->next!=r){
+        t = t->next;
+        r = r->next;
+    }
+
+    if(t->cur.Data.data_is_file_or_dir == 0){ // file, calcResult
+        calcResult(result_options, client_ip, server_ip, recv_exec_seq);
+        return 0; // for client
+    }
+    else if(t->cur.Data.data_is_file_or_dir == 1){ // call MapReduce if input is directory
+        callMapReduce(result_options, client_ip, server_ip, &(t->cur));
+        return 1; // for minigoogle 
+    }
 }
 
 /*send the seq out*/

@@ -134,20 +134,26 @@ void *server_thread(int sockfd, struct sockaddr_in server_sockaddr){
     }
 
     if(endTransaction == 1){
-        printf("\nGot %d execute packet(s) from Client %s.\n", packet_recv.Data.seq + 1, packet_recv.sender_id);
+        fprintf(stderr, "\nGot %d execute packet(s) from Client %s.\n", packet_recv.Data.seq + 1, packet_recv.sender_id);
         //printf("==server_thread 4==\n");
-        printf("Sending bulk ack to Client %s: %d packet(s) received.\n", packet_recv.sender_id, packet_recv.Data.seq + 1);
+        fprintf(stderr, "Sending bulk ack to Client %s: %d packet(s) received.\n", packet_recv.sender_id, packet_recv.Data.seq + 1);
         packet_recv.Data.ts = rtt_ts(&rttinfo);
         sendExecuteAck(sockfd, client_sockaddr, &packet_recv);
 
         /*calculate the result by demashing the received sequence and store the result into a file*/
-        printf("\nStart de-marshaling the Data from the received packet(s).\n");
-        calcResult(result_options, client_ip, server_ip, executePacketSeq);
-        printf("Calculating result ...\n");
+        fprintf(stderr, "\nStart de-marshaling the Data from the received packet(s).\n");
+        int result_type;
+        result_type = executeResult(result_options, client_ip, server_ip, executePacketSeq);
+        fprintf(stderr, "Calculating result ...\n");
 
         /*generate the result seq*/
-        printf("Generating the result link...\n\n");
-        genExecuteReply(result_options, client_ip, server_ip, trans_id);
+        fprintf(stderr, "Generating the result link...\n\n");
+        if(result_type == 0){ // for client
+            genExecuteReply(result_options, client_ip, server_ip, trans_id);
+        }
+        else if(result_type == 1){ // for minigoogle
+            genMapReduceReply(result_options, client_ip, server_ip, trans_id);
+        }
 
         /*keep sending until got ack from client*/
         int result_seq = 0;
@@ -163,14 +169,16 @@ void *server_thread(int sockfd, struct sockaddr_in server_sockaddr){
                 send_seq = send_seq->next;
             }
 
-            printf("Sent %d result packet(s) to Client.\n", result_seq + 1);
+            fprintf(stderr, "Sent %d result packet(s) to Client.\n", result_seq + 1);
             recvResultAck(sockfd, (struct sockaddr *)&client_sockaddr, packet_ack);
 
             //printf("==server_thread 6==\n");
         }while(strcmp(packet_ack->packet_type, "110") != 0);
 
-        printf("\nGot result bulk ack from Client %s: acknowledged %d result packet(s).\n", packet_ack->sender_id, packet_ack->Data.seq);
-        printf("Congratulations! RPC %s completed successfully.\n\n", packet_ack->Data.procedure_name);
+        fprintf(stderr, "\nGot result bulk ack from Client %s: acknowledged %d result packet(s).\n", 
+                packet_ack->sender_id, packet_ack->Data.seq);
+        fprintf(stderr, "Congratulations! RPC %s completed successfully.\n", packet_ack->Data.procedure_name);
+        fprintf(stderr, "---------------\n");
         /*remove packet_reply transaction from executeResultSeq*/
         clearTransaction(executeResultSeq, atoi(trans_id));
         /*remove packet_execute (packet_ack) transaction from executePacketSeq*/
@@ -241,7 +249,7 @@ void *sockserver(void *arg){
     int init = pthread_mutex_init(&mutex, NULL); // initialize the mutex
     if(init != 0)
     {
-       printf("mutex init failed \n");
+       fprintf(stderr, "mutex init failed \n");
        exit(1);
     }
 
@@ -277,7 +285,7 @@ void *sockserver(void *arg){
 
         switch(nready){
             case -1:
-                printf("sockserver: errno: %d.\n", errno);
+                fprintf(stderr, "sockserver: errno: %d.\n", errno);
                 perror("\nSELECT: unexpected error occured.\n");
                 logging(LOGFILE, "\nSELECT: unexpected error occured.\n");
 
@@ -286,7 +294,7 @@ void *sockserver(void *arg){
                     if(client[k] > 0){
                         struct stat tStat;
                         if (-1 == fstat(client[k], &tStat)){
-                            printf("fstat %d error:%s", sockfd, strerror(errno));
+                            fprintf(stderr, "fstat %d error:%s", sockfd, strerror(errno));
                             FD_CLR(client[k], &ready_set);
                         }
                     }
@@ -295,7 +303,7 @@ void *sockserver(void *arg){
                 break;
             case 0:
                 /* timeout occuired */
-                printf("sockserver: TIMEOUT... %d.\n", errno);
+                fprintf(stderr, "sockserver: TIMEOUT... %d.\n", errno);
                 status=-1;
                 break;
             default:

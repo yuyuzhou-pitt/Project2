@@ -14,7 +14,7 @@ endif
 all:port-mapper
 
 port-mapper:
-	${CC} ${WARN} -g ${THREADFLAG} -o port-mapper port_mapper.c socket_port_mapper.c ../lib/libsocket.c ../lib/getaddrinfo.c ../lib/liblog.c ../lib/libfile.c ../lib/libterminal.c ../packet/register.c ../packet/register_ack.c ../packet/request.c ../packet/request_reply.c ../packet/linkload.c ../lib/libscientific.c ../packet/checksum.c
+	${CC} ${WARN} -g ${THREADFLAG} -o port-mapper port_mapper.c socket_port_mapper.c ../lib/libsocket.c ../lib/getaddrinfo.c ../lib/liblog.c ../lib/libfile.c ../lib/libterminal.c ../packet/portmap_table.c ../packet/register_ack.c ../packet/request.c ../packet/request_reply.c ../packet/linkload.c ../lib/libscientific.c ../packet/checksum.c
 
 clean:
 ifneq ($(wildcard port-mapper),)

@@ -77,7 +77,10 @@ Packet *recvRequestReply(int sockfd){
 }
 
 /*for client terminal, to print the requst*/
-int printRequestReply(Packet *packet_reply, char *exec_remote_ipstr, char *exec_remote_port){
+int printRequestReply(Packet *packet_reply, Request_Reply *requested_servers, char *exec_remote_ipstr, char *exec_remote_port){
+    /*store the requested servers for execute using*/
+    requested_servers->response_number = packet_reply->Data.response_number;
+
     /*print the using response only*/
     if(packet_reply->Data.response_number > 0){
         int index = packet_reply->Data.response_index;
@@ -90,6 +93,11 @@ int printRequestReply(Packet *packet_reply, char *exec_remote_ipstr, char *exec_
                  packet_reply->Data.portMapperTable[i].program_name, \
                  packet_reply->Data.portMapperTable[i].version_number, \
                  packet_reply->Data.portMapperTable[i].procedure_name);
+
+            snprintf(requested_servers->portMapperTable[i].server_ip, sizeof(requested_servers->portMapperTable[i].server_ip), 
+                 "%s", packet_reply->Data.portMapperTable[i].server_ip);
+            snprintf(requested_servers->portMapperTable[i].port_number, sizeof(requested_servers->portMapperTable[i].port_number), 
+                 "%s", packet_reply->Data.portMapperTable[i].port_number);
         }
 
         snprintf(exec_remote_ipstr, sizeof(packet_reply->Data.portMapperTable[index].server_ip), 

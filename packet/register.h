@@ -7,6 +7,5 @@
 #include "../lib/libterminal.h"
 
 Packet *genRegister(OptionsStruct *options, char *server_ip, char *port_mapper_ip);
-int writePortMapperTable(Packet *packet_recv, char *file);
 
 #endif

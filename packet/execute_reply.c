@@ -148,6 +148,41 @@ Packet_Seq *genExecuteReply(OptionsStruct *result_options, char *client_ip, char
     //return result_seq;
 }
 
+/*generate minigoogle reply, put result directory into reply packet*/
+Packet_Seq *genMapReduceReply(OptionsStruct *result_options, char *client_ip, char *server_ip, char *trans_id){
+
+    Packet execReply;
+    //execReply = (Packet *)malloc(sizeof(Packet));
+    snprintf(execReply.sender_id, sizeof(execReply.sender_id), "%s", server_ip);
+    snprintf(execReply.receiver_id, sizeof(execReply.receiver_id), "%s", client_ip);
+    snprintf(execReply.packet_type, sizeof(execReply.packet_type), "%s", "101"); // execute reply type
+
+    snprintf(execReply.Data.program_name, sizeof(execReply.Data.program_name), "%s", result_options->option1);
+    snprintf(execReply.Data.version_number, sizeof(execReply.Data.version_number), "%s", result_options->option2);
+    snprintf(execReply.Data.procedure_name, sizeof(execReply.Data.procedure_name), "%s", result_options->option3);
+    snprintf(execReply.Data.res_data.data_str, sizeof(execReply.Data.res_data.data_str), "%s", result_options->option4);
+
+    srand(time(NULL));
+    execReply.Data.transaction_id = rand(); // share the same transaction_id in the seq
+
+    /*store the transcation id, in case there are multiple secquence in the link*/
+    snprintf(trans_id, 32, "%d", execReply.Data.transaction_id);
+
+    execReply.Data.end_flag = 1; // only one packet send
+    execReply.Data.seq = 0;
+    execReply.Data.respons_type = 2; // here is str (2)
+
+    /*checksum*/
+    snprintf(execReply.PacketChecksum, sizeof(execReply.PacketChecksum),
+             "%d", chksum_crc32((unsigned char*) &execReply, sizeof(execReply)));
+
+    /*enqueue the packet*/
+    appendListSeq(executeResultSeq, execReply);
+
+    return executeResultSeq;
+
+}
+
 /*for server, send execute reply*/
 int sendExecuteReply(int sockfd, struct sockaddr_in sockaddr, Packet *packet){
    return Sendto(sockfd, packet, sizeof(Packet), MSG_NOSIGNAL, sockaddr, sizeof(sockaddr));

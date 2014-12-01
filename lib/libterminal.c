@@ -23,6 +23,21 @@
 
 // parse command into options, 3 the most
 OptionsStruct *command2struct(char *input){
+    size_t count = 0;
+    char *tmp = input;
+    char *last_delim;
+   /* Count how many elements will be extracted. */
+    while (*tmp){
+        if (' ' == *tmp){
+            count++;
+            last_delim = tmp;
+        }
+        tmp++;
+    }
+    /* Add space for trailing token. */
+    count += last_delim < (input + strlen(input) - 1);
+
+    /*split the input string*/
     char *command, *argument1, *argument2, *argument3, *argument4, *argument5;
     char *temp1, *temp2, *temp3, *temp4; 
     OptionsStruct *parse_options;
@@ -32,6 +47,7 @@ OptionsStruct *command2struct(char *input){
     argument2 = strtok_r(temp2, " ", &temp3);
     argument3 = strtok_r(temp3, " ", &temp4);
     argument4 = strtok_r(temp4, " ", &argument5);
+    parse_options->count = count;
     snprintf(parse_options->command, sizeof(parse_options->command), "%s", command);
     snprintf(parse_options->option1, sizeof(parse_options->option1), "%s", argument1);
     snprintf(parse_options->option2, sizeof(parse_options->option2), "%s", argument2);
@@ -45,20 +61,20 @@ OptionsStruct *argv2struct(int argc, char *argv[]){
     OptionsStruct *parse_options;
     parse_options = (OptionsStruct *)calloc(1, sizeof(OptionsStruct));
     snprintf(parse_options->command, sizeof(parse_options->command), "%s", argv[1]);
-    printf("parse_options->command=%s.\n", parse_options->command);
+    fprintf(stderr, "parse_options->command=%s.\n", parse_options->command);
     if (argc > 2){
         snprintf(parse_options->option1, sizeof(parse_options->option1), "%s", argv[2]);
         snprintf(parse_options->option2, sizeof(parse_options->option2), "%s", argv[3]);
         snprintf(parse_options->option3, sizeof(parse_options->option3), "%s", argv[4]);
-        printf("parse_options->option1=%s.\n", parse_options->option1);
-        printf("parse_options->option2=%s.\n", parse_options->option2);
-        printf("parse_options->option3=%s.\n", parse_options->option3);
+        fprintf(stderr, "parse_options->option1=%s.\n", parse_options->option1);
+        fprintf(stderr, "parse_options->option2=%s.\n", parse_options->option2);
+        fprintf(stderr, "parse_options->option3=%s.\n", parse_options->option3);
     }
     if (argc > 5){
         snprintf(parse_options->option4, sizeof(parse_options->option4), "%s", argv[5]);
         snprintf(parse_options->option5, sizeof(parse_options->option5), "%s", argv[6]);
-        printf("parse_options->option4=%s.\n", parse_options->option4);
-        printf("parse_options->option5=%s.\n", parse_options->option5);
+        fprintf(stderr, "parse_options->option4=%s.\n", parse_options->option4);
+        fprintf(stderr, "parse_options->option5=%s.\n", parse_options->option5);
     }
     return parse_options;
 }
@@ -100,7 +116,7 @@ struct PortMapperTable *parseRequestString(char *line){
 // exit the services
 int quit(){
     char confirm[4];
-    fprintf(stdout, "WARNING: Do you want to quit? Please confirm: [y/N]");
+    fprintf(stderr, "WARNING: Do you want to quit? Please confirm: [y/N]");
     scanf("%c", confirm);
     if(confirm[0] == 'y'){
     //if(strcmp(confirm, "y") == 0 || strcmp(confirm, "y\273AJ4") == 0 ) { //confirm[0] == 'y'){
@@ -114,12 +130,12 @@ int quit(){
 *****************/
 
 int helpPortMapper(){
-    printf("\nUsage: <subcommand>\n");
-    printf("A user interface for the SRPC system.\n\n");
-    printf("Subcommands:\n");
-    printf("  help      show this message\n");
-    printf("  list      list the current services in port mapper table\n");
-    printf("  quit      stop SRPC socket and quit\n");
+    fprintf(stderr, "\nUsage: <subcommand>\n");
+    fprintf(stderr, "A user interface for the SRPC system.\n\n");
+    fprintf(stderr, "Subcommands:\n");
+    fprintf(stderr, "  help      show this message\n");
+    fprintf(stderr, "  list      list the current services in port mapper table\n");
+    fprintf(stderr, "  quit      stop SRPC socket and quit\n");
     return 0;
 }
 
@@ -137,22 +153,22 @@ int listPortMapper(){
     strcat(file, PORT_MAPPER_TABLE_FILE);
 
     if(access(file, F_OK) < 0) {
-        fprintf(stdout, "Sorry, no service found. Please register first.\n");
+        fprintf(stderr, "Sorry, no service found. Please register first.\n");
         char logmsg[128]; snprintf(logmsg, sizeof(logmsg), "readfile: File not found: %s\n", file);
         logging(LOGFILE, logmsg);
         return -1;
     }
 
     if ((fp = fopen(file,"r")) < 0){
-        fprintf(stdout, "Sorry, can not get service information.\n");
+        fprintf(stderr, "Sorry, can not get service information.\n");
         char logmsg[128]; snprintf(logmsg, sizeof(logmsg), "readfile: Failed to open file: %s\n", file);
         logging(LOGFILE, logmsg);
         return -1;
     }
 
-    fprintf(stdout, "Server_IP     |Port |Program_name|Version|Procedure\n");
+    fprintf(stderr, "Server_IP     |Port |Program_name|Version|Procedure\n");
     while ((read = getline(&line, &len, fp)) != -1) {
-        fprintf(stdout, "%s", line);
+        fprintf(stderr, "%s", line);
     }
 
     fclose(fp);
@@ -165,15 +181,21 @@ int listPortMapper(){
 ************/
 
 int helpServer(){
-    printf("\nUsage: <subcommand> [options]\n");
-    printf("A user interface for the SRPC system.\n\n");
-    printf("Subcommands:\n");
-    printf("  help      show this message\n");
-    printf("  register  <program-name> <version-number>\n");
-    printf("            register services into prot-mapper table\n");
-    printf("                <program-name>   the program name provided by this server\n");
-    printf("                <version-number> version number for the program\n");
-    printf("  quit      stop SRPC socket and quit\n");
+    fprintf(stderr, "\nUsage: <subcommand> [options]\n");
+    fprintf(stderr, "A user interface for the SRPC system.\n\n");
+    fprintf(stderr, "Subcommands:\n");
+    fprintf(stderr, "  help      show this message\n");
+    fprintf(stderr, "  register  <program-name> <version-number>\n");
+    fprintf(stderr, "            register services into prot-mapper table\n");
+    fprintf(stderr, "                <program-name>   the program name provided by this server\n");
+    fprintf(stderr, "                <version-number> version number for the program\n");
+    fprintf(stderr, "  quit      stop SRPC socket and quit\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "For example:\n");
+    fprintf(stderr, "1. To register Scientific Library version 2:\n");
+    fprintf(stderr, "# register ScientificLibrary 2\n");
+    fprintf(stderr, "2. To register Map Reduce Library version 1:\n");
+    fprintf(stderr, "# register MapReduceLibrary 1\n\n");
     return 0;
 }
 
@@ -182,15 +204,21 @@ int helpServer(){
 ************/
 
 int helpClient(){
-    printf("\nUsage: <subcommand> [options]\n");
-    printf("A user interface for the SRPC system.\n\n");
-    printf("Subcommands:\n");
-    printf("  help      show this message\n");
-    printf("  request   <program-name> <version-number> <procedure>\n");
-    printf("		request server info for certain procedure provided by certain program of certain version\n");
-    printf("  execute   <program-name> <version-number> <procedure> <input_file> <out_putfile>\n");
-    printf("            request and call the remote procedure call\n");
-    printf("  quit      stop SRPC socket and quit\n");
+    fprintf(stderr, "\nUsage: <subcommand> [options]\n");
+    fprintf(stderr, "A user interface for the SRPC system.\n\n");
+    fprintf(stderr, "Subcommands:\n");
+    fprintf(stderr, "  help      show this message\n");
+    fprintf(stderr, "  request   <program-name> <version-number> <procedure>\n");
+    fprintf(stderr, "		request server info for certain procedure provided by certain program of certain version\n");
+    fprintf(stderr, "  execute   <program-name> <version-number> <procedure> <input_file> <out_putfile>\n");
+    fprintf(stderr, "            request and call the remote procedure call\n");
+    fprintf(stderr, "  quit      stop SRPC socket and quit\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "For example:\n");
+    fprintf(stderr, "1. To request Multipy in Scientific Library version 2:\n");
+    fprintf(stderr, "# request ScientificLibrary 2 Multiply\n");
+    fprintf(stderr, "2. To execute Index in Map Reduce Library version 1:\n");
+    fprintf(stderr, "# execute MapReduceLibrary 1 Index ../input ../output\n\n");
 
     return 0;
 }
@@ -200,15 +228,21 @@ int helpClient(){
 *****************/
 
 int helpMiniGoogle(){
-    printf("\nUsage: ./minigoogle <subcommand> [options]\n");
-    printf("A user interface for the SRPC system.\n\n");
-    printf("Subcommands:\n");
-    printf("  help      show this message\n");
-    printf("  request   <program-name> <version-number> <procedure>\n");
-    printf("            request server info for certain procedure provided by certain program of certain version\n");
-    printf("  execute   <program-name> <version-number> <procedure> <input_file> <out_putfile>\n");
-    printf("            request and call the remote procedure call\n");
-    printf("  quit      stop SRPC socket and quit\n");
+    fprintf(stderr, "\nUsage: ./minigoogle <subcommand> [options]\n");
+    fprintf(stderr, "The command line MiniGoogle interface.\n\n");
+    fprintf(stderr, "Subcommands:\n");
+    fprintf(stderr, "  help      show this message\n");
+    fprintf(stderr, "  request   <program-name> <version-number> <procedure>\n");
+    fprintf(stderr, "            request server info for certain procedure provided by certain program of certain version\n");
+    fprintf(stderr, "  execute   <program-name> <version-number> <procedure> <input_file> <out_putfile>\n");
+    fprintf(stderr, "            request and call the remote procedure call\n");
+    fprintf(stderr, "  quit      stop SRPC socket and quit\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "For example:\n");
+    fprintf(stderr, "1. To request Multipy in Scientific Library version 2:\n");
+    fprintf(stderr, "$ ./minigoogle request ScientificLibrary 2 Multiply\n");
+    fprintf(stderr, "2. To execute Index in Map Reduce Library version 1:\n");
+    fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Index ../input ../output\n\n");
 
     return 0;
 }
