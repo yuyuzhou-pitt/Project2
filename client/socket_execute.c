@@ -64,6 +64,8 @@ static void sig_alrm(int signo){
     siglongjmp(jmpbuf,1);
 }
 
+SplitStr *items; //the items to be search
+
 /*handle the server connection*/
 void connectServer(void *arg){
 //void connectServer(OptionsStruct *exec_options){
@@ -245,7 +247,76 @@ sendagain:
     pthread_exit(0);
 }
 
-int jobTracker(OptionsStruct *exec_options){
+int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_items){
+    /*clear temp directory before execution*/
+    char temp_dir[128];
+    snprintf(temp_dir, sizeof(temp_dir), "../.%s", exec_options->action);
+    struct stat st = {0};
+    if (stat(temp_dir, &st) != -1) {
+        rmrf(temp_dir);
+    }
+
+    /*go through the files in the directory*/
+    DIR *in_dp;
+    struct dirent *in_ep;
+
+    int hash_index = 0;
+    int i_thread = 0; // Thread iterator
+    char file_path[128];
+    char input_dir[128];
+    snprintf(input_dir, sizeof(input_dir), exec_options->option4);
+
+    int iN;
+    for(iN=0;iN < s_items->count;iN++){
+        in_dp = opendir (exec_options->option4);
+        if (in_dp == NULL){
+            perror ("Couldn't open the directory");
+            return -1;
+        }
+
+        while (in_ep = readdir (in_dp)){
+            if (i_thread == NTHREADS){
+                i_thread = 0;
+            }
+
+            //fprintf(stderr, "in_ep->d_name=%s.\n", in_ep->d_name);
+            /*skip all the none-text file*/
+            if(strcmp(getStrAfterDelimiter(in_ep->d_name, '.'), "txt") != 0){
+                continue;
+            }
+
+            if(s_items->items[iN][0] == in_ep->d_name[0]){
+                hash_index = iN % requested_servers->response_number;
+                snprintf(file_path, sizeof(file_path), "%s/%s", input_dir, in_ep->d_name);
+
+                snprintf(exec_options->items, sizeof(exec_options->items), s_items->items[iN]);
+                snprintf(exec_options->option4, sizeof(exec_options->option4),
+                         "%s", file_path); //exec_pkt->Data.para_data.data_str
+                snprintf(exec_options->remote_ipstr, sizeof(exec_options->remote_ipstr),
+                         "%s", requested_servers->portMapperTable[hash_index].server_ip); //socket host
+                snprintf(exec_options->remote_port, sizeof(exec_options->remote_port),
+                         "%s", requested_servers->portMapperTable[hash_index].port_number); // socket port
+    
+                fprintf(stderr, "Handling file: %s.\n", exec_options->option4);
+                //fprintf(stderr, "exec_options->option4=%s.\n", exec_options->option4);
+    
+                /*connectServer(exec_options);*/
+                pthread_create(&connect_id[i_thread], NULL, &connectServer, (void **)exec_options);
+                pthread_join(connect_id[i_thread], NULL);
+    
+                //fprintf(stderr, "exec_options->option4=%s.\n", exec_options->option4);
+                i_thread++;
+                break;
+            }
+        }
+        (void) closedir (in_dp);
+    }
+
+
+    return 0;
+}
+
+int indexJobTracker(OptionsStruct *exec_options){
     /*clear temp directory before execution*/
     char temp_dir[128];
     snprintf(temp_dir, sizeof(temp_dir), "../.%s", exec_options->action);
@@ -331,26 +402,45 @@ void *execlient(void *arg){
         fprintf(stderr, "###### Start spliting: %s ######\n", exec_options->option4);
         /*split input file into specific bloks*/
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", SPLIT);
-        jobTracker(exec_options);
+        indexJobTracker(exec_options);
 
         fprintf(stderr, "###### Start wordcounting: %s ######\n", exec_options->option4);
         /*collect word count in each file*/
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", WORDCOUNT);
-        jobTracker(exec_options);
+        indexJobTracker(exec_options);
 
         fprintf(stderr, "###### Start sorting: %s ######\n", exec_options->option4);
         /*sort the file to put the same item in the same file (AlphaBeta)*/
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", SORT);
-        jobTracker(exec_options);
+        indexJobTracker(exec_options);
 
         fprintf(stderr, "###### Start reducing: %s ######\n", exec_options->option4);
         /*reduce the file to merge the same item (master inverted index) (AlphaBeta)*/
-        snprintf(exec_options->action, sizeof(exec_options->action), "%s", REDUCE);
-        jobTracker(exec_options);
+        snprintf(exec_options->action, sizeof(exec_options->action), "%s", MII); // the result of master inverted index
+        indexJobTracker(exec_options);
     }
     else if(strcmp(exec_options->option3, SEARCH) == 0){
-        snprintf(exec_options->action, sizeof(exec_options->action), "%s", SEARCH);
-        jobTracker(exec_options);
+        items = (SplitStr *)malloc(sizeof(SplitStr));
+
+        /* move option4(items) into items */
+        items = str2array(exec_options->option4, ' ');  //split by space
+        //snprintf(exec_options->items, sizeof(exec_options->items), exec_options->option4);
+
+        /* set the result dir from index to be searching: ../.MII/ */
+        snprintf(exec_options->option4, sizeof(exec_options->option4), "../.%s", MII); // the result from index
+        if (access(exec_options->option4,F_OK) != 0 && access(exec_options->option4,R_OK) != 0){
+            fprintf(stderr, "Sorry, Inverted index directory %s does not exist or does not have read permission.\n", exec_options->option4);
+            fprintf(stderr, "Please execute Index first.\n");
+            pthread_exit(1);
+        }
+
+        /*start the searching job, handle with one item*/
+        snprintf(exec_options->action, sizeof(exec_options->action), "%s", SINGLE);
+        searchJobTracker(exec_options, items);
+
+        /*start the searching job, merge the result*/
+        snprintf(exec_options->action, sizeof(exec_options->action), "%s", MERGE);
+        searchJobTracker(exec_options, items);
     }
 
     pthread_exit(0);

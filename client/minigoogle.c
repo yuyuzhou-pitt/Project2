@@ -162,7 +162,8 @@ int main(int argc, char *argv[]){
             exit(1);
         }
 
-        if ( access(input_options->option4,F_OK) != 0 &&
+        /*check input path if indexing*/
+        if (strcmp(input_options->option3, INDEX) == 0 && access(input_options->option4,F_OK) != 0 &&
                   access(input_options->option4,R_OK) != 0){
             fprintf(stderr, "Sorry, Source file or directory %s does not exist or does not have read permission.\n", input_options->option4);
             exit(1);

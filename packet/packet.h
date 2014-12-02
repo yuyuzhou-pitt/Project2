@@ -22,7 +22,10 @@
 #define WORDCOUNT "Wordcount"
 #define SORT "Sort"
 #define REDUCE "Reduce"
+#define MII "MII" //master_inverted_index"
 #define SEARCH "Search"
+#define SINGLE "Single"
+#define MERGE "Merge"
 
 /*define the file split block size*/
 #define SPLIT_BLOCK 65536//64K
@@ -125,6 +128,7 @@ typedef struct Execute_Sevice{
     uint32_t ts; //timestamp
     int data_is_file_or_dir; // 0 is file, for multiply and etc; 1 is dir, for minigoogle
     char exec_action[30]; // Split, Index, or Search
+    char search_items[1024]; // "item1 item2"
     int num_parameter;
     int para1_type; //int:0, float:1, char:2; default is 0
     int para1_dimension;
@@ -147,6 +151,7 @@ typedef struct Execute_Ack{
     uint32_t ts; //timestamp
     int data_is_file_or_dir; // 0 is file, for multiply and etc; 1 is dir, for minigoogle
     char exec_action[30]; // Split, Index, or Search
+    char search_items[1024]; // "item1 item2"
 }Execute_Ack;
 
 typedef struct Execute_Respons{ 
@@ -159,6 +164,7 @@ typedef struct Execute_Respons{
     uint32_t ts;
     int data_is_file_or_dir; // 0 is file, for multiply and etc; 1 is dir, for minigoogle
     char exec_action[30]; // Split, Index, or Search
+    char search_items[1024]; // "item1 item2"
     int num_parameter;
     int respons_type;
     int respons_dimension;

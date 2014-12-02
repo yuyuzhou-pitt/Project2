@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <assert.h>
 #include "liblog.h"
 #include "../packet/packet.h"
 #include "../lib/libterminal.h"
@@ -77,6 +78,51 @@ OptionsStruct *argv2struct(int argc, char *argv[]){
         //fprintf(stderr, "parse_options->option5=%s.\n", parse_options->option5);
     }
     return parse_options;
+}
+
+SplitStr *str2array(char *a_str, const char a_delim){
+    size_t count     = 0;
+    char* tmp        = a_str;
+    char* last_comma = 0;
+    char delim[2];
+    delim[0] = a_delim;
+    delim[1] = 0;
+
+    /* Count how many elements will be extracted. */
+    while (*tmp){
+        if (a_delim == *tmp){
+            count++;
+            last_comma = tmp;
+        }
+        tmp++;
+    }
+
+    /* Add space for trailing token. */
+    count += last_comma < (a_str + strlen(a_str) - 1);
+
+    /* Add space for terminating null string so caller
+       knows where the list of returned strings ends. */
+    //count++;
+
+    SplitStr *result;
+    result = (SplitStr *)malloc(sizeof(SplitStr));
+
+    result->count = count;
+
+    size_t idx  = 0;
+    char* token = strtok(a_str, delim);
+
+    int iN = 0;
+    while (token){
+        assert(idx < count);
+        snprintf(result->items[iN], sizeof(result->items[iN]), strdup(token));
+        token = strtok(0, delim);
+        iN ++;
+    }
+    //assert(idx == count - 1);
+    //*(result + idx) = 0;
+
+    return result;
 }
 
 // parse command into options, 3 the most
@@ -240,7 +286,9 @@ int helpMiniGoogle(){
     fprintf(stderr, "1. To request Multipy in Scientific Library version 2:\n");
     fprintf(stderr, "$ ./minigoogle request MapReduceLibrary 2 Search\n");
     fprintf(stderr, "2. To execute Index in Map Reduce Library version 1:\n");
-    fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Index ../input ../output\n\n");
+    fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Index ../input ../output\n");
+    fprintf(stderr, "3. To execute Search in Map Reduce Library version 1:\n");
+    fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Search \"item1 item2\" ./output\n\n");
 
     return 0;
 }

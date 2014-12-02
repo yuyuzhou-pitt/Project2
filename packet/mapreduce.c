@@ -44,34 +44,30 @@ int callMapReduce(OptionsStruct *result_options, char *client_ip, char *server_i
         mkdir(result_options->option4, 0700);
     }
 
+    /*index action*/
     if(strcmp(received_packet->Data.exec_action, SPLIT) == 0){
         fprintf(stdout, "Spliting file %s.\n", received_packet->Data.para_data.data_str);
-        snprintf(logmsg, sizeof(logmsg), "Hi, I got file %s. I will do splitting...\n", 
-                 received_packet->Data.para_data.data_str);
-        logging(LOGFILE, logmsg);
 
         /*all the split file will be store in the directory .Split */
         Split(received_packet->Data.para_data.data_str, result_options->option4);
     }
     else if(strcmp(received_packet->Data.exec_action, WORDCOUNT) == 0){
         fprintf(stdout, "Wordcounting file %s.\n", received_packet->Data.para_data.data_str);
-        snprintf(logmsg, sizeof(logmsg), "Hi, I got file %s. I will do wordcounting...\n", 
-                 received_packet->Data.para_data.data_str);
-        logging(LOGFILE, logmsg);
     }
     else if(strcmp(received_packet->Data.exec_action, SORT) == 0){
-        snprintf(logmsg, sizeof(logmsg), "Hi, I got file %s. I will do sorting...\n", 
-                 received_packet->Data.para_data.data_str);
-        logging(LOGFILE, logmsg);
+        fprintf(stdout, "Sorting file %s.\n", received_packet->Data.para_data.data_str);
     }
-    else if(strcmp(received_packet->Data.exec_action, REDUCE) == 0){
-        snprintf(logmsg, sizeof(logmsg), "Hi, I got file %s. I will do reducing...\n", 
-                 received_packet->Data.para_data.data_str);
-        logging(LOGFILE, logmsg);
+    else if(strcmp(received_packet->Data.exec_action, MII) == 0){
+        fprintf(stdout, "Sorting file %s.\n", received_packet->Data.para_data.data_str);
     }
-    else if(strcmp(received_packet->Data.exec_action, SEARCH) == 0){
-        snprintf(logmsg, sizeof(logmsg), "Hi, I will do searching...\n");
-        logging(LOGFILE, logmsg);
+    /*search action*/
+    else if(strcmp(received_packet->Data.exec_action, SINGLE) == 0){
+        fprintf(stdout, "Searching items \"%s\" in file %s.\n",  received_packet->Data.search_items, 
+                received_packet->Data.para_data.data_str);
+    }
+    else if(strcmp(received_packet->Data.exec_action, MERGE) == 0){
+        fprintf(stdout, "Searching items %s in file %s.\n",  received_packet->Data.search_items, 
+                received_packet->Data.para_data.data_str);
     }
 
     return 0;

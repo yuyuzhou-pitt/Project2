@@ -45,7 +45,7 @@ RemoteProgram *MapReduceLibrary(){
     remoteProgram->data_is_file_or_dir = 1;
     remoteProgram->data_type = 2; // str
     snprintf(remoteProgram->procedures[0], sizeof(remoteProgram->procedures[0]), "Index");
-    snprintf(remoteProgram->procedures[1], sizeof(remoteProgram->procedures[1]), "Reduce");
+    snprintf(remoteProgram->procedures[1], sizeof(remoteProgram->procedures[1]), "Search");
 
     return remoteProgram;
 }
