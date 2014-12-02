@@ -14,7 +14,7 @@ endif
 all: server
 
 server:
-	${CC} ${WARN} -g ${THREADFLAG} -o server server.c socket_server.c socket_register.c server_stub_receive.c ../lib/libsocket.c ../lib/getaddrinfo.c ../lib/liblog.c ../lib/libfile.c ../lib/libterminal.c ../lib/libmath.c ../packet/register.c ../lib/libscientific.c ../packet/checksum.c ../packet/execute_ack.c ../packet/linkseq.c ../packet/linkload.c ../packet/execute.c ../packet/execute_reply.c ../packet/register_ack.c ../packet/hello.c ../lib/rtt.c ../packet/mapreduce.c
+	${CC} ${WARN} -g ${THREADFLAG} -o server server.c socket_server.c socket_register.c server_stub_receive.c ../lib/libsocket.c ../lib/getaddrinfo.c ../lib/liblog.c ../lib/libfile.c ../lib/libterminal.c ../lib/libmath.c ../packet/register.c ../lib/libscientific.c ../packet/checksum.c ../packet/execute_ack.c ../packet/linkseq.c ../packet/linkload.c ../packet/execute.c ../packet/execute_reply.c ../packet/register_ack.c ../packet/hello.c ../lib/rtt.c ../packet/mapreduce.c ../lib/libmapreduce.c
 
 clean:
 ifneq ($(wildcard ../.1*),) 
