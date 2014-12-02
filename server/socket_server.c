@@ -134,20 +134,20 @@ void *server_thread(int sockfd, struct sockaddr_in server_sockaddr){
     }
 
     if(endTransaction == 1){
-        fprintf(stderr, "\nGot %d execute packet(s) from Client %s.\n", packet_recv.Data.seq + 1, packet_recv.sender_id);
+        //fprintf(stderr, "\nGot %d execute packet(s) from Client %s.\n", packet_recv.Data.seq + 1, packet_recv.sender_id);
         //printf("==server_thread 4==\n");
-        fprintf(stderr, "Sending bulk ack to Client %s: %d packet(s) received.\n", packet_recv.sender_id, packet_recv.Data.seq + 1);
+        //fprintf(stderr, "Sending bulk ack to Client %s: %d packet(s) received.\n", packet_recv.sender_id, packet_recv.Data.seq + 1);
         packet_recv.Data.ts = rtt_ts(&rttinfo);
         sendExecuteAck(sockfd, client_sockaddr, &packet_recv);
 
         /*calculate the result by demashing the received sequence and store the result into a file*/
-        fprintf(stderr, "\nStart de-marshaling the Data from the received packet(s).\n");
+        //fprintf(stderr, "\nStart de-marshaling the Data from the received packet(s).\n");
         int result_type;
         result_type = executeResult(result_options, client_ip, server_ip, executePacketSeq);
-        fprintf(stderr, "Calculating result ...\n");
+        //fprintf(stderr, "Calculating result ...\n");
 
         /*generate the result seq*/
-        fprintf(stderr, "Generating the result link...\n\n");
+        //fprintf(stderr, "Generating the result link...\n\n");
         if(result_type == 0){ // for client
             genExecuteReply(result_options, client_ip, server_ip, trans_id);
         }
@@ -169,16 +169,16 @@ void *server_thread(int sockfd, struct sockaddr_in server_sockaddr){
                 send_seq = send_seq->next;
             }
 
-            fprintf(stderr, "Sent %d result packet(s) to Client.\n", result_seq + 1);
+            //fprintf(stderr, "Sent %d result packet(s) to Client.\n", result_seq + 1);
             recvResultAck(sockfd, (struct sockaddr *)&client_sockaddr, packet_ack);
 
             //printf("==server_thread 6==\n");
         }while(strcmp(packet_ack->packet_type, "110") != 0);
 
-        fprintf(stderr, "\nGot result bulk ack from Client %s: acknowledged %d result packet(s).\n", 
-                packet_ack->sender_id, packet_ack->Data.seq);
-        fprintf(stderr, "Congratulations! RPC %s completed successfully.\n", packet_ack->Data.procedure_name);
-        fprintf(stderr, "---------------\n");
+        //fprintf(stderr, "\nGot result bulk ack from Client %s: acknowledged %d result packet(s).\n", 
+        //        packet_ack->sender_id, packet_ack->Data.seq);
+        //fprintf(stderr, "Congratulations! RPC %s completed successfully.\n", packet_ack->Data.procedure_name);
+        //fprintf(stderr, "---------------\n");
         /*remove packet_reply transaction from executeResultSeq*/
         clearTransaction(executeResultSeq, atoi(trans_id));
         /*remove packet_execute (packet_ack) transaction from executePacketSeq*/

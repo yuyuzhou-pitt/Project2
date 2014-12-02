@@ -104,6 +104,7 @@ Packet_Seq *genExecuteServ(OptionsStruct *options, char *client_ip, char *server
     // when it's dir, only one packet sent out
     if(sciLibrary->data_is_file_or_dir == 1){
         execPkt.Data.num_parameter = 1; //1 parameter, send dir only
+        execPkt.Data.seq = 0; // only one packet
         execPkt.Data.end_flag = 1; //only one packet needed
         snprintf(execPkt.Data.para_data.data_str, sizeof(execPkt.Data.para_data.data_str), "%s", options->option4);
         //snprintf(execPkt.Data.para_data.data_str, sizeof(execPkt.Data.para_data.data_str),

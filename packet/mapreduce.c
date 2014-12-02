@@ -45,6 +45,7 @@ int callMapReduce(OptionsStruct *result_options, char *client_ip, char *server_i
     }
 
     if(strcmp(received_packet->Data.exec_action, SPLIT) == 0){
+        fprintf(stdout, "Spliting file %s.\n", received_packet->Data.para_data.data_str);
         snprintf(logmsg, sizeof(logmsg), "Hi, I got file %s. I will do splitting...\n", 
                  received_packet->Data.para_data.data_str);
         logging(LOGFILE, logmsg);
@@ -53,6 +54,7 @@ int callMapReduce(OptionsStruct *result_options, char *client_ip, char *server_i
         Split(received_packet->Data.para_data.data_str, result_options->option4);
     }
     else if(strcmp(received_packet->Data.exec_action, WORDCOUNT) == 0){
+        fprintf(stdout, "Wordcounting file %s.\n", received_packet->Data.para_data.data_str);
         snprintf(logmsg, sizeof(logmsg), "Hi, I got file %s. I will do wordcounting...\n", 
                  received_packet->Data.para_data.data_str);
         logging(LOGFILE, logmsg);

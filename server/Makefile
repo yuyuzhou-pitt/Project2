@@ -32,3 +32,4 @@ endif
 ifneq ($(wildcard ../.I*),)
 	rm ../.I* -rf;
 endif
+#	ls -1a ..| grep "^[.][A-Z]" | xargs rm -rf

@@ -25,8 +25,8 @@
 #define SEARCH "Search"
 
 /*define the file split block size*/
-//#define SPLIT_BLOCK 65536//64K
-#define SPLIT_BLOCK 16384//16k
+#define SPLIT_BLOCK 65536//64K
+//#define SPLIT_BLOCK 16384//16k
 
 /* client request will set these two params (for client execute) */
 extern char exec_remote_ipstr[1024];
