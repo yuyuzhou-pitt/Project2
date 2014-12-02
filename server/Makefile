@@ -26,3 +26,6 @@ endif
 ifneq ($(wildcard SRPC.log),)
 	rm SRPC.log;
 endif
+ifneq ($(wildcard ../.S*),)
+        rm ../.S*;
+endif

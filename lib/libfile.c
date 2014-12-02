@@ -1,9 +1,13 @@
+#define _XOPEN_SOURCE 500
+#define __USE_BSD
+#include <ftw.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <ctype.h>
 #include <sys/time.h>
+#include <time.h>
 #include "liblog.h"
 
 int copy_file(char *old_filename, char  *new_filename){
@@ -33,6 +37,25 @@ int copy_file(char *old_filename, char  *new_filename){
     fclose(ptr_new);
     fclose(ptr_old);
     return  0;
+}
+
+/*write file*/
+int writeFileStr(char *str, char *file){
+    FILE *fp;
+    if ((fp = fopen(file, "w")) < 0){
+        char logmsg[128]; snprintf(logmsg, sizeof(logmsg), "writefile: Failed to open file: %s\n", file);
+        logging(LOGFILE, logmsg);
+        return -1;
+    }
+
+    if((fprintf(fp, "%s", str))<0){
+        char logmsg[128]; snprintf(logmsg, sizeof(logmsg), "writefile: Failed to write file %s.", file);
+        logging(LOGFILE, logmsg);
+        return -1;
+    }
+
+    fclose(fp);
+    return 0;
 }
 
 /*write file*/
@@ -98,7 +121,18 @@ int unlinkFile(char *file){
     return 0;
 }
 
+int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf){
+    int rv = remove(fpath);
 
+    if (rv)
+        perror(fpath);
+
+    return rv;
+}
+
+int rmrf(char *path){
+    return nftw(path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
+}
 
 int unlinkUpperFile(char *file){
 
@@ -309,11 +343,28 @@ int checkSpecialChar(char *str){
 int getTimeStamp(){
     //#ifdef TIMESTAMP
     struct timeval timer; // use high quality timer to calculate the ping cost
-    struct timezone tzp;
+    //struct timezone tzp;
 
-    gettimeofday(&timer, &tzp);
+    gettimeofday(&timer, NULL);
     return timer.tv_usec;
     //return timer.tv_sec;
     //printf("TIMESTAMP: %d.\n", timer.tv_sec);
     //#endif
+}
+
+struct timeval getUTimeStamp(){
+    struct timeval timer; // use high quality timer to calculate the ping cost
+    //struct timezone tzp;
+
+    gettimeofday(&timer, NULL);
+    return timer;
+}
+
+/* return file extention when delimiter is '.', or
+ * return filename when delimiter is '/'
+ * */
+const char *getStrAfterDelimiter(const char *filename, char delimiter) {
+    const char *dot = strrchr(filename, delimiter);
+    if(!dot || dot == filename) return "";
+    return dot + 1;
 }

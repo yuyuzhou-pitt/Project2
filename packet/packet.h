@@ -3,16 +3,27 @@
 
 #include <stdint.h>
 
+/*define the internal hidden file*/
 #define PORT_MAPPER_FILE ".port_mapper"
 #define PORT_MAPPER_TABLE_FILE ".port_mapper_table"
 #define EXECUTE_RESULT_FILE ".port_mapper_execute_result"
+
+/*define the hello packet interval*/
 #define HELLO_INTERVAL 4 // for hello packet, in seconds
 
+/*define the packet data length*/
 #define INTMTU 256
 #define FLOATMTU 128
 #define CHARMTU 512
 
-#define SPLIT_TMP_DIR ".split_tmp_dir"
+/*define the map reduce actions*/
+#define SPLIT "Split"
+#define INDEX "Index"
+#define SEARCH "Search"
+
+/*define the file split block size*/
+//#define SPLIT_BLOCK 65536//64K
+#define SPLIT_BLOCK 16384//16k
 
 /* client request will set these two params (for client execute) */
 extern char exec_remote_ipstr[1024];
