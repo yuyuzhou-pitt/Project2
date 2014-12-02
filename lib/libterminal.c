@@ -61,20 +61,20 @@ OptionsStruct *argv2struct(int argc, char *argv[]){
     OptionsStruct *parse_options;
     parse_options = (OptionsStruct *)calloc(1, sizeof(OptionsStruct));
     snprintf(parse_options->command, sizeof(parse_options->command), "%s", argv[1]);
-    fprintf(stderr, "parse_options->command=%s.\n", parse_options->command);
+    //fprintf(stderr, "parse_options->command=%s.\n", parse_options->command);
     if (argc > 2){
         snprintf(parse_options->option1, sizeof(parse_options->option1), "%s", argv[2]);
         snprintf(parse_options->option2, sizeof(parse_options->option2), "%s", argv[3]);
         snprintf(parse_options->option3, sizeof(parse_options->option3), "%s", argv[4]);
-        fprintf(stderr, "parse_options->option1=%s.\n", parse_options->option1);
-        fprintf(stderr, "parse_options->option2=%s.\n", parse_options->option2);
-        fprintf(stderr, "parse_options->option3=%s.\n", parse_options->option3);
+        //fprintf(stderr, "parse_options->option1=%s.\n", parse_options->option1);
+        //fprintf(stderr, "parse_options->option2=%s.\n", parse_options->option2);
+        //fprintf(stderr, "parse_options->option3=%s.\n", parse_options->option3);
     }
     if (argc > 5){
         snprintf(parse_options->option4, sizeof(parse_options->option4), "%s", argv[5]);
         snprintf(parse_options->option5, sizeof(parse_options->option5), "%s", argv[6]);
-        fprintf(stderr, "parse_options->option4=%s.\n", parse_options->option4);
-        fprintf(stderr, "parse_options->option5=%s.\n", parse_options->option5);
+        //fprintf(stderr, "parse_options->option4=%s.\n", parse_options->option4);
+        //fprintf(stderr, "parse_options->option5=%s.\n", parse_options->option5);
     }
     return parse_options;
 }
@@ -192,9 +192,7 @@ int helpServer(){
     fprintf(stderr, "  quit      stop SRPC socket and quit\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "For example:\n");
-    fprintf(stderr, "1. To register Scientific Library version 2:\n");
-    fprintf(stderr, "# register ScientificLibrary 2\n");
-    fprintf(stderr, "2. To register Map Reduce Library version 1:\n");
+    fprintf(stderr, "1. To register Map Reduce Library version 1:\n");
     fprintf(stderr, "# register MapReduceLibrary 1\n\n");
     return 0;
 }
@@ -240,7 +238,7 @@ int helpMiniGoogle(){
     fprintf(stderr, "\n");
     fprintf(stderr, "For example:\n");
     fprintf(stderr, "1. To request Multipy in Scientific Library version 2:\n");
-    fprintf(stderr, "$ ./minigoogle request ScientificLibrary 2 Multiply\n");
+    fprintf(stderr, "$ ./minigoogle request MapReduceLibrary 2 Search\n");
     fprintf(stderr, "2. To execute Index in Map Reduce Library version 1:\n");
     fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Index ../input ../output\n\n");
 

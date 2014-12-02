@@ -19,6 +19,9 @@
 /*define the map reduce actions*/
 #define SPLIT "Split"
 #define INDEX "Index"
+#define WORDCOUNT "Wordcount"
+#define SORT "Sort"
+#define REDUCE "Reduce"
 #define SEARCH "Search"
 
 /*define the file split block size*/

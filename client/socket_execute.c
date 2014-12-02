@@ -23,7 +23,6 @@
 #define EXECUTE_SERV 1
 #include "../packet/packet.h"
 
-//#define TIMESTAMP 1
 #include "../lib/libfile.h"
 
 #include "client_stub_send.h"
@@ -55,7 +54,7 @@ char addrstr[100]; // local ip address (eth0)
 
 pthread_mutex_t execute_mutex;
 
-#define TIMESTAMP 1
+//#define TIMESTAMP 1
 
 static struct rtt_info   rttinfo;
 static int      rttinit = 0;
@@ -138,7 +137,7 @@ void connectServer(void *arg){
 
     char trans_id[32]; //record the transaction id, in case multiple sequences
     int time1 = getTimeStamp();
-    fprintf(stderr, "\n(TS:%d) Start marshaling from the input file %s.\n\n", time1, exec_options->option4);
+    //fprintf(stderr, "\n(TS:%d) Start marshaling from the input file %s.\n\n", time1, exec_options->option4);
     sequence_execute = Execute_stub(exec_options, addrstr, exec_options->remote_ipstr, trans_id); // msg to be sent out
     seq_cursor = sequence_execute->next;
 
@@ -161,7 +160,7 @@ sendagain:
     /*send the whole sequence all by once*/
     while(seq_cursor->next != seq_cursor){
         if(seq_cursor->cur.Data.transaction_id == atoi(trans_id)){
-            fprintf(stderr, "Sending execute packet with seq %d to Server %s.\n", seq_cursor->cur.Data.seq, seq_cursor->cur.receiver_id);
+            //fprintf(stderr, "Sending execute packet with seq %d to Server %s.\n", seq_cursor->cur.Data.seq, seq_cursor->cur.receiver_id);
             seq_cursor->cur.Data.ts = rtt_ts(&rttinfo);
             sendExecuteServ(clientfd, sockaddr, &(seq_cursor->cur));
         }
@@ -172,10 +171,10 @@ sendagain:
     if(sigsetjmp(jmpbuf,1)!=0){
         if(rtt_timeout(&rttinfo)<0){
             rttinit = 0;    /* reinit in case we're called again */
-            fprintf(stderr, "No response from server.\n");
+            //fprintf(stderr, "No response from server.\n");
             return(0);
         }
-        fprintf(stderr, "Waiting for ACK time out, resend the packet.\n");
+        //fprintf(stderr, "Waiting for ACK time out, resend the packet.\n");
         seq_cursor = sequence_execute->next; //reset seq cursor
         goto sendagain;
     }
@@ -183,7 +182,7 @@ sendagain:
     do{
         //printf("==execlient 2==\n");
         /*wait for the bulk ack*/
-        fprintf(stderr, "Waiting for ACK packet...\n");
+        //fprintf(stderr, "Waiting for ACK packet...\n");
         packet_ack = recvExecuteAck(clientfd);
     }while(strcmp(packet_ack->packet_type, "110") != 0);
 
@@ -192,8 +191,8 @@ sendagain:
     rtt_stop(&rttinfo, rtt_ts(&rttinfo) - packet_ack->Data.ts);
 
     //printf("==execlient 3==\n");
-    fprintf(stderr, "\n(TS:%d) Got bulk packet ack from Server %s: acknowledged %d execute packet(s). \n", 
-            getTimeStamp(), packet_ack->sender_id, packet_ack->Data.seq);
+    //fprintf(stderr, "\n(TS:%d) Got bulk packet ack from Server %s: acknowledged %d execute packet(s). \n", 
+    //        getTimeStamp(), packet_ack->sender_id, packet_ack->Data.seq);
 
     /*receive the left packets of the result*/
     if(packet_ack->Data.end_flag == 1){
@@ -201,19 +200,19 @@ sendagain:
         do{
             //printf("==execlient 5==\n");
             packet_reply = recvExecuteResult(clientfd); //receive and insert result into executePacketSeq
-            fprintf(stderr, "Got packet result with seq %d from Server %s.\n", packet_reply->Data.seq, packet_reply->sender_id);
+            //fprintf(stderr, "Got packet result with seq %d from Server %s.\n", packet_reply->Data.seq, packet_reply->sender_id);
             //appendListSeq(executeResultSeq, *packet_reply);
         }while(isEndTransaction(executeResultSeq, packet_reply->Data.transaction_id) != 1);
 
         //printf("==execlient 6==\n");
-        fprintf(stderr, "\n(TS:%d) Sending bulk ack to Server %s: %d packet(s) received.\n", 
-               getTimeStamp(), packet_reply->receiver_id, packet_reply->Data.seq + 1);
+        //fprintf(stderr, "\n(TS:%d) Sending bulk ack to Server %s: %d packet(s) received.\n", 
+        //      getTimeStamp(), packet_reply->receiver_id, packet_reply->Data.seq + 1);
 
         sendExecuteAck(clientfd, sockaddr, packet_reply);
 
         /*if result data is fle, then write result into file*/
         if(packet_ack->Data.data_is_file_or_dir == 0){
-            fprintf(stderr, "\n(TS:%d) Writing result to output file %s.\n", getTimeStamp(), exec_options->option5);
+            //fprintf(stderr, "\n(TS:%d) Writing result to output file %s.\n", getTimeStamp(), exec_options->option5);
             writeResultSeq(executeResultSeq, exec_options->option5); //option5 is the output file
         }
         else if(packet_ack->Data.data_is_file_or_dir == 1){
@@ -222,8 +221,8 @@ sendagain:
         }
 
         int time2 = getTimeStamp();
-        fprintf(stderr, "\n(TS:%d) Congratulations! RPC %s completed successfully.\n\n", 
-               time2, packet_ack->Data.procedure_name);
+        //fprintf(stderr, "\n(TS:%d) Congratulations! RPC %s completed successfully.\n\n", 
+        //       time2, packet_ack->Data.procedure_name);
 
         #ifdef TIMESTAMP
         fprintf(stderr, "**************************\n");
@@ -246,28 +245,8 @@ sendagain:
     pthread_exit(0);
 }
 
-/* thread for lsrp-client */
-void *execlient(void *arg){
-
-    OptionsStruct *exec_options;
-    exec_options = (OptionsStruct *)malloc(sizeof(OptionsStruct));
-    exec_options = (OptionsStruct *)arg;
-
-    /*wait until the client request get the result*/
-    int wait_count = 0;
-
-    /*do NOT run multiple command execute within 5 seconds*/
-    while(wait_count < 5000 && requested_servers->response_number <= 0) {
-        usleep(1000);
-        wait_count ++;
-    };
-
-    fprintf(stderr, "requested_servers->response_number=%d.\n", requested_servers->response_number);
-
-    /*client decide which action to execute*/
-    snprintf(exec_options->action, sizeof(exec_options->action), "%s", SPLIT);
-
-    /*clear temp directory before*/
+int jobTracker(OptionsStruct *exec_options){
+    /*clear temp directory before execution*/
     char temp_dir[128];
     snprintf(temp_dir, sizeof(temp_dir), "../.%s", exec_options->action);
     struct stat st = {0};
@@ -292,27 +271,28 @@ void *execlient(void *arg){
                 i_thread = 0;
             }
 
-            fprintf(stderr, "in_ep->d_name=%s.\n", in_ep->d_name);
+            //fprintf(stderr, "in_ep->d_name=%s.\n", in_ep->d_name);
             /*skip all the none-text file*/
             if(strcmp(getStrAfterDelimiter(in_ep->d_name, '.'), "txt") != 0){
                 continue;
             }
             hash_index = file_count % requested_servers->response_number;
-            snprintf(file_path, sizeof(file_path), "%s/%s", input_dir, in_ep->d_name); 
-            snprintf(exec_options->option4, sizeof(exec_options->option4), 
+            snprintf(file_path, sizeof(file_path), "%s/%s", input_dir, in_ep->d_name);
+            snprintf(exec_options->option4, sizeof(exec_options->option4),
                      "%s", file_path); //exec_pkt->Data.para_data.data_str
-            snprintf(exec_options->remote_ipstr, sizeof(exec_options->remote_ipstr), 
+            snprintf(exec_options->remote_ipstr, sizeof(exec_options->remote_ipstr),
                      "%s", requested_servers->portMapperTable[hash_index].server_ip); //socket host
-            snprintf(exec_options->remote_port, sizeof(exec_options->remote_port), 
+            snprintf(exec_options->remote_port, sizeof(exec_options->remote_port),
                      "%s", requested_servers->portMapperTable[hash_index].port_number); // socket port
 
-            fprintf(stderr, "exec_options->option4=%s.\n", exec_options->option4);
+            fprintf(stderr, "Handling file: %s.\n", exec_options->option4);
+            //fprintf(stderr, "exec_options->option4=%s.\n", exec_options->option4);
 
-            //connectServer(exec_options);
+            /*connectServer(exec_options);*/
             pthread_create(&connect_id[i_thread], NULL, &connectServer, (void **)exec_options);
             pthread_join(connect_id[i_thread], NULL);
 
-            fprintf(stderr, "new exec_options->option4=%s.\n", exec_options->option4);
+            //fprintf(stderr, "exec_options->option4=%s.\n", exec_options->option4);
             file_count ++;
             i_thread++;
         }
@@ -320,6 +300,58 @@ void *execlient(void *arg){
     }
     else
         perror ("Couldn't open the directory");
+
+    return 0;
+}
+
+/* thread for lsrp-client */
+void *execlient(void *arg){
+
+    OptionsStruct *exec_options;
+    exec_options = (OptionsStruct *)malloc(sizeof(OptionsStruct));
+    exec_options = (OptionsStruct *)arg;
+
+    /*wait until the client request get the result*/
+    int wait_count = 0;
+
+    /*do NOT run multiple command execute within 5 seconds*/
+    while(wait_count < 3000 && requested_servers->response_number <= 0) {
+        usleep(1000);
+        wait_count ++;
+    };
+
+    if(requested_servers->response_number <= 0){
+        exit(1);
+    }
+
+    fprintf(stderr, "requested_servers->response_number=%d.\n", requested_servers->response_number);
+
+    /*client decide which action to execute*/
+    if(strcmp(exec_options->option3, INDEX) == 0){
+        fprintf(stderr, "###### Start spliting: %s ######\n", exec_options->option4);
+        /*split input file into specific bloks*/
+        snprintf(exec_options->action, sizeof(exec_options->action), "%s", SPLIT);
+        jobTracker(exec_options);
+
+        fprintf(stderr, "###### Start wordcounting: %s ######\n", exec_options->option4);
+        /*collect word count in each file*/
+        snprintf(exec_options->action, sizeof(exec_options->action), "%s", WORDCOUNT);
+        jobTracker(exec_options);
+
+        fprintf(stderr, "###### Start sorting: %s ######\n", exec_options->option4);
+        /*sort the file to put the same item in the same file (AlphaBeta)*/
+        snprintf(exec_options->action, sizeof(exec_options->action), "%s", SORT);
+        jobTracker(exec_options);
+
+        fprintf(stderr, "###### Start reducing: %s ######\n", exec_options->option4);
+        /*reduce the file to merge the same item (master inverted index) (AlphaBeta)*/
+        snprintf(exec_options->action, sizeof(exec_options->action), "%s", REDUCE);
+        jobTracker(exec_options);
+    }
+    else if(strcmp(exec_options->option3, SEARCH) == 0){
+        snprintf(exec_options->action, sizeof(exec_options->action), "%s", SEARCH);
+        jobTracker(exec_options);
+    }
 
     pthread_exit(0);
 }

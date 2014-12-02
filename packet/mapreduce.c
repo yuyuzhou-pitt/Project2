@@ -45,13 +45,26 @@ int callMapReduce(OptionsStruct *result_options, char *client_ip, char *server_i
     }
 
     if(strcmp(received_packet->Data.exec_action, SPLIT) == 0){
-        snprintf(logmsg, sizeof(logmsg), "Hi, I got file %s. I will do splitting...\n", received_packet->Data.para_data.data_str);
+        snprintf(logmsg, sizeof(logmsg), "Hi, I got file %s. I will do splitting...\n", 
+                 received_packet->Data.para_data.data_str);
         logging(LOGFILE, logmsg);
 
+        /*all the split file will be store in the directory .Split */
         Split(received_packet->Data.para_data.data_str, result_options->option4);
     }
-    else if(strcmp(received_packet->Data.exec_action, INDEX) == 0){
-        snprintf(logmsg, sizeof(logmsg), "Hi, I will do indexing...\n");
+    else if(strcmp(received_packet->Data.exec_action, WORDCOUNT) == 0){
+        snprintf(logmsg, sizeof(logmsg), "Hi, I got file %s. I will do wordcounting...\n", 
+                 received_packet->Data.para_data.data_str);
+        logging(LOGFILE, logmsg);
+    }
+    else if(strcmp(received_packet->Data.exec_action, SORT) == 0){
+        snprintf(logmsg, sizeof(logmsg), "Hi, I got file %s. I will do sorting...\n", 
+                 received_packet->Data.para_data.data_str);
+        logging(LOGFILE, logmsg);
+    }
+    else if(strcmp(received_packet->Data.exec_action, REDUCE) == 0){
+        snprintf(logmsg, sizeof(logmsg), "Hi, I got file %s. I will do reducing...\n", 
+                 received_packet->Data.para_data.data_str);
         logging(LOGFILE, logmsg);
     }
     else if(strcmp(received_packet->Data.exec_action, SEARCH) == 0){
@@ -94,7 +107,8 @@ int Split(char *file, char *target_dir){
         }
         fseek(split_fp, f_index-count, SEEK_CUR);
         t_stamp = getUTimeStamp();
-        snprintf(target_file, sizeof(target_file), "%s/%s___%d.%d", target_dir, 
+        /*please use .txt to be the file extension (checking in client/socket_execute.c:jobTracker())*/
+        snprintf(target_file, sizeof(target_file), "%s/%s___%d.%d.txt", target_dir, 
                  getStrAfterDelimiter(file, '/'), t_stamp.tv_sec, t_stamp.tv_usec);
         snprintf(logmsg, sizeof(logmsg), "Split: write into part file: %s\n", target_file);logging(LOGFILE, logmsg);
         writeFile(split_str, f_index, target_file, "w");
