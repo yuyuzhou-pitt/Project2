@@ -37,7 +37,7 @@ int callMapReduce(OptionsStruct *result_options, char *client_ip, char *server_i
     snprintf(result_options->option2, sizeof(result_options->option2), "%s", received_packet->Data.version_number);
     snprintf(result_options->option3, sizeof(result_options->option3), "%s", received_packet->Data.procedure_name);
     /*exec_reply_pkt->Data.res_data.data_str*/
-    snprintf(result_options->option4, sizeof(result_options->option4), "../.%s", received_packet->Data.exec_action);
+    snprintf(result_options->option4, sizeof(result_options->option4), "../.%s_%s", client_ip, received_packet->Data.exec_action);
 
     struct stat st = {0};
     if (stat(result_options->option4, &st) == -1) {

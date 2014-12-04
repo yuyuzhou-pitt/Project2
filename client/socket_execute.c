@@ -427,7 +427,8 @@ void *execlient(void *arg){
         //snprintf(exec_options->items, sizeof(exec_options->items), exec_options->option4);
 
         /* set the result dir from index to be searching: ../.MII/ */
-        snprintf(exec_options->option4, sizeof(exec_options->option4), "../.%s", MII); // the result from index
+        snprintf(exec_options->option4, sizeof(exec_options->option4), "../.%s_%s", addrstr, MII); // the result from index
+
         if (access(exec_options->option4,F_OK) != 0 && access(exec_options->option4,R_OK) != 0){
             fprintf(stderr, "Sorry, Inverted index directory %s does not exist or does not have read permission.\n", exec_options->option4);
             fprintf(stderr, "Please execute Index first.\n");

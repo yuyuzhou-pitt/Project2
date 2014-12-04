@@ -18,7 +18,7 @@ server:
 
 clean:
 ifneq ($(wildcard ../.1*),) 
-	rm ../.1*; 
+	rm ../.1* -rf; 
 endif
 ifneq ($(wildcard server),)
 	rm server;
@@ -26,10 +26,3 @@ endif
 ifneq ($(wildcard SRPC.log),)
 	rm SRPC.log;
 endif
-ifneq ($(wildcard ../.S*),)
-	rm ../.S* -rf;
-endif
-ifneq ($(wildcard ../.I*),)
-	rm ../.I* -rf;
-endif
-#	ls -1a ..| grep "^[.][A-Z]" | xargs rm -rf
