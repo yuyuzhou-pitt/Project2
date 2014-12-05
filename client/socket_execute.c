@@ -266,6 +266,8 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_items){
     char input_dir[128];
     snprintf(input_dir, sizeof(input_dir), exec_options->option4);
 
+    char result_file[128];
+    char output_file[128];
     int iN;
     for(iN=0;iN < s_items->count;iN++){
         fprintf(stderr, "Searching for item: %s...\n", s_items->items[iN]);
@@ -275,6 +277,7 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_items){
             return -1;
         }
 
+        int file_found = 0;
         while (in_ep = readdir (in_dp)){
             if (i_thread == NTHREADS){
                 i_thread = 0;
@@ -287,6 +290,7 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_items){
             }
 
             if(s_items->items[iN][0] == in_ep->d_name[0]){
+                file_found = 1;
                 hash_index = iN % requested_servers->response_number;
                 snprintf(file_path, sizeof(file_path), "%s/%s", input_dir, in_ep->d_name);
 
@@ -312,13 +316,19 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_items){
         }
         (void) closedir (in_dp);
 
-        /*check the result from remote*/
-        char result_file[128];
-        char output_file[128];
-        snprintf(result_file, sizeof(result_file), "../.%s_%s/%s.txt", addrstr, SINGLE, s_items->items[iN]); // the result from index
         snprintf(output_file, sizeof(result_file), "%s/%s.txt", exec_options->option5, s_items->items[iN]); // the result from index
-        if(copy_file(result_file, output_file) != 0)
-            fprintf(stderr, "Error during copy!");
+
+        /*check the result from remote*/
+        if(file_found == 1){
+            snprintf(result_file, sizeof(result_file), "../.%s_%s/%s.txt", addrstr, SINGLE, s_items->items[iN]); // the result from index
+            if(copy_file(result_file, output_file) != 0)
+                fprintf(stderr, "Error copying file: %s!\n", output_file);
+        }
+        else{
+            char w_line[128];
+            snprintf(w_line, sizeof(w_line), "Sorry, item \"%s\" found nowhere.\n", s_items->items[iN]);
+            writeFile(w_line, strlen(w_line), output_file, "w");
+        }
     }
 
 

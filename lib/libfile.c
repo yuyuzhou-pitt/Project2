@@ -14,6 +14,12 @@ int copy_file(char *old_filename, char  *new_filename){
     FILE  *ptr_old, *ptr_new;
     int  a;
 
+    if(access(old_filename, F_OK) < 0) {
+        char logmsg[128]; snprintf(logmsg, sizeof(logmsg), "copy_file: File not found: %s\n", old_filename);
+        logging(LOGFILE, logmsg);
+        return -1;
+    }
+
     ptr_old = fopen(old_filename, "rb");
     ptr_new = fopen(new_filename, "wb");
 
