@@ -89,7 +89,7 @@ Packet_Seq *genExecuteServ(OptionsStruct *options, char *client_ip, char *server
     snprintf(execPkt.Data.version_number, sizeof(execPkt.Data.version_number), "%s", options->option2);
     snprintf(execPkt.Data.procedure_name, sizeof(execPkt.Data.procedure_name), "%s", options->option3);
     snprintf(execPkt.Data.exec_action, sizeof(execPkt.Data.exec_action), "%s", options->action);
-    snprintf(execPkt.Data.search_items, sizeof(execPkt.Data.search_items), "%s", options->items);
+    snprintf(execPkt.Data.search_item, sizeof(execPkt.Data.search_item), "%s", options->item);
 
     srand(time(NULL));
     execPkt.Data.transaction_id = rand(); // share the same transaction_id in the seq

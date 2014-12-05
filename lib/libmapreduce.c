@@ -7,6 +7,7 @@
 
 #include "liblog.h"
 #include "libfile.h"
+#include "libterminal.h"
 #include "../packet/packet.h"
 
 char logmsg[128];
@@ -53,4 +54,45 @@ int Split(char *file, char *target_dir){
     fclose(split_fp);
 
     return 0;
+}
+
+/*all the split file will be store in the directory .Single*/
+int Search(char *file, char *item, char *target_dir){
+    FILE *s_fp;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t n_read;
+
+    if ((s_fp = fopen(file,"r")) < 0){
+        snprintf(logmsg, sizeof(logmsg), "readfile: Failed to open file: %s\n", file);
+        logging(LOGFILE, logmsg);
+        return -1;
+    }
+
+    SplitStr *str_array;
+    str_array = (SplitStr *)malloc(sizeof(SplitStr));
+    char w_line[1024];
+    int aN;
+    int bingo = 0;
+    char target_file[1024];
+    snprintf(target_file, sizeof(target_file), "%s/%s.txt", target_dir, item);
+    while ((n_read = getline(&line, &len, s_fp)) != -1) {
+        str2array(str_array, line, '\t');
+        if(strcmp(item, str_array->items[0]) == 0){
+            bingo = 1;
+            for(aN=1;aN < str_array->count;aN=aN+2){
+                snprintf(w_line, sizeof(w_line), "%s\t%s\n", str_array->items[aN], str_array->items[aN+1]);
+                writeFile(w_line, strlen(w_line), target_file, "a");
+            }
+        }
+        //snprintf(target_file, sizeof(target_file), "%s/%c_mii.txt", target_dir, line[0]);
+        //writeFile(line, n_read, target_file, "a");
+    }
+
+    if(bingo == 0){
+        snprintf(w_line, sizeof(w_line), "Sorry, item \"%s\" found nowhere.\n", item);
+        writeFile(w_line, strlen(w_line), target_file, "a");
+    }
+
+    fclose(s_fp);
 }

@@ -54,7 +54,7 @@ RemoteProgram *(*libraryPtr)();
 
 int main(int argc, char *argv[]){
 
-    if(argc < 2 || argc > 7){
+    if(argc < 2 || argc > 8){
     //if(argc < 2 || argc > 7 || strcmp(argv[0], "minigoogle") != 0 || strcmp(argv[0], "./minigoogle") != 0){
         helpMiniGoogle();
         exit(1);
@@ -122,9 +122,13 @@ int main(int argc, char *argv[]){
     }
     else if(strcmp(argv[1], "execute") == 0){
        /* execute format:
-        * $ ./minigoogle execute   <program-name> <version-number> <procedure> <input-file> <output-file>
+        * fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Index ../input ../output\n");
+        * fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Search ../input ../output \"item1 item2\"");
+        *
+        * the argc number could be 7 or 8.
         */
-        if(argc != 7){
+        if(argc < 7 || argc > 8){
+            fprintf(stderr, "Wrong sytax.\n");
             helpMiniGoogle();
             exit(1);
         }
@@ -162,8 +166,7 @@ int main(int argc, char *argv[]){
             exit(1);
         }
 
-        /*check input path if indexing*/
-        if (strcmp(input_options->option3, INDEX) == 0 && access(input_options->option4,F_OK) != 0 &&
+        if (access(input_options->option4,F_OK) != 0 &&
                   access(input_options->option4,R_OK) != 0){
             fprintf(stderr, "Sorry, Source file or directory %s does not exist or does not have read permission.\n", input_options->option4);
             exit(1);

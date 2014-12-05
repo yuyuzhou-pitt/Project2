@@ -268,7 +268,8 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_items){
 
     int iN;
     for(iN=0;iN < s_items->count;iN++){
-        in_dp = opendir (exec_options->option4);
+        fprintf(stderr, "Searching for item: %s...\n", s_items->items[iN]);
+        in_dp = opendir (input_dir);
         if (in_dp == NULL){
             perror ("Couldn't open the directory");
             return -1;
@@ -289,7 +290,7 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_items){
                 hash_index = iN % requested_servers->response_number;
                 snprintf(file_path, sizeof(file_path), "%s/%s", input_dir, in_ep->d_name);
 
-                snprintf(exec_options->items, sizeof(exec_options->items), s_items->items[iN]);
+                snprintf(exec_options->item, sizeof(exec_options->item), s_items->items[iN]);
                 snprintf(exec_options->option4, sizeof(exec_options->option4),
                          "%s", file_path); //exec_pkt->Data.para_data.data_str
                 snprintf(exec_options->remote_ipstr, sizeof(exec_options->remote_ipstr),
@@ -297,7 +298,7 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_items){
                 snprintf(exec_options->remote_port, sizeof(exec_options->remote_port),
                          "%s", requested_servers->portMapperTable[hash_index].port_number); // socket port
     
-                fprintf(stderr, "Handling file: %s.\n", exec_options->option4);
+                fprintf(stderr, "Searching in file: %s.\n", exec_options->option4);
                 //fprintf(stderr, "exec_options->option4=%s.\n", exec_options->option4);
     
                 /*connectServer(exec_options);*/
@@ -310,6 +311,14 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_items){
             }
         }
         (void) closedir (in_dp);
+
+        /*check the result from remote*/
+        char result_file[128];
+        char output_file[128];
+        snprintf(result_file, sizeof(result_file), "../.%s_%s/%s.txt", addrstr, SINGLE, s_items->items[iN]); // the result from index
+        snprintf(output_file, sizeof(result_file), "%s/%s.txt", exec_options->option5, s_items->items[iN]); // the result from index
+        if(copy_file(result_file, output_file) != 0)
+            fprintf(stderr, "Error during copy!");
     }
 
 
@@ -395,7 +404,7 @@ void *execlient(void *arg){
         exit(1);
     }
 
-    fprintf(stderr, "requested_servers->response_number=%d.\n", requested_servers->response_number);
+    //fprintf(stderr, "requested_servers->response_number=%d.\n", requested_servers->response_number);
 
     /*client decide which action to execute*/
     if(strcmp(exec_options->option3, INDEX) == 0){
@@ -420,28 +429,26 @@ void *execlient(void *arg){
         indexJobTracker(exec_options);
     }
     else if(strcmp(exec_options->option3, SEARCH) == 0){
-        items = (SplitStr *)malloc(sizeof(SplitStr));
+        fprintf(stderr, "###### Start searching item(s): %s ######\n", exec_options->option6);
 
-        /* move option4(items) into items */
-        items = str2array(exec_options->option4, ' ');  //split by space
-        //snprintf(exec_options->items, sizeof(exec_options->items), exec_options->option4);
-
-        /* set the result dir from index to be searching: ../.MII/ */
-        snprintf(exec_options->option4, sizeof(exec_options->option4), "../.%s_%s", addrstr, MII); // the result from index
-
-        if (access(exec_options->option4,F_OK) != 0 && access(exec_options->option4,R_OK) != 0){
-            fprintf(stderr, "Sorry, Inverted index directory %s does not exist or does not have read permission.\n", exec_options->option4);
-            fprintf(stderr, "Please execute Index first.\n");
-            pthread_exit(1);
+        /*create the output directory if not exists*/
+        struct stat st = {0};
+        if (stat(exec_options->option5, &st) == -1) {
+            mkdir(exec_options->option5, 0700);
         }
+
+        /*turn the items into array*/
+        items = (SplitStr *)malloc(sizeof(SplitStr));
+        str2array(items, exec_options->option6, ' ');  //split by space
 
         /*start the searching job, handle with one item*/
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", SINGLE);
         searchJobTracker(exec_options, items);
 
         /*start the searching job, merge the result*/
-        snprintf(exec_options->action, sizeof(exec_options->action), "%s", MERGE);
-        searchJobTracker(exec_options, items);
+        //snprintf(exec_options->action, sizeof(exec_options->action), "%s", MERGE);
+        //searchJobTracker(exec_options, items);
+        fprintf(stderr, "###### Searching task done, check your result please: %s. ######\n", exec_options->option5);
     }
 
     pthread_exit(0);

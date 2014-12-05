@@ -62,11 +62,14 @@ int callMapReduce(OptionsStruct *result_options, char *client_ip, char *server_i
     }
     /*search action*/
     else if(strcmp(received_packet->Data.exec_action, SINGLE) == 0){
-        fprintf(stdout, "Searching items \"%s\" in file %s.\n",  received_packet->Data.search_items, 
+        fprintf(stdout, "Searching item \"%s\" in file %s.\n",  received_packet->Data.search_item, 
                 received_packet->Data.para_data.data_str);
+
+        /*all the split file will be store in the directory .Single*/
+        Search(received_packet->Data.para_data.data_str, received_packet->Data.search_item, result_options->option4);
     }
     else if(strcmp(received_packet->Data.exec_action, MERGE) == 0){
-        fprintf(stdout, "Searching items %s in file %s.\n",  received_packet->Data.search_items, 
+        fprintf(stdout, "Searching item \"%s\" in file %s.\n",  received_packet->Data.search_item, 
                 received_packet->Data.para_data.data_str);
     }
 

@@ -77,10 +77,13 @@ OptionsStruct *argv2struct(int argc, char *argv[]){
         //fprintf(stderr, "parse_options->option4=%s.\n", parse_options->option4);
         //fprintf(stderr, "parse_options->option5=%s.\n", parse_options->option5);
     }
+    if (argc > 7){
+        snprintf(parse_options->option6, sizeof(parse_options->option6), "%s", argv[7]);
+    }
     return parse_options;
 }
 
-SplitStr *str2array(char *a_str, const char a_delim){
+int *str2array(SplitStr *result, char *a_str, const char a_delim){
     size_t count     = 0;
     char* tmp        = a_str;
     char* last_comma = 0;
@@ -104,8 +107,8 @@ SplitStr *str2array(char *a_str, const char a_delim){
        knows where the list of returned strings ends. */
     //count++;
 
-    SplitStr *result;
-    result = (SplitStr *)malloc(sizeof(SplitStr));
+    //SplitStr *result;
+    //result = (SplitStr *)malloc(sizeof(SplitStr));
 
     result->count = count;
 
@@ -119,10 +122,12 @@ SplitStr *str2array(char *a_str, const char a_delim){
         token = strtok(0, delim);
         iN ++;
     }
-    //assert(idx == count - 1);
-    //*(result + idx) = 0;
+    if(idx == count - 1){
+        snprintf(result->items[0], sizeof(result->items[0]), a_str);
+    }
 
-    return result;
+    return 0;
+    //return result;
 }
 
 // parse command into options, 3 the most
@@ -288,7 +293,7 @@ int helpMiniGoogle(){
     fprintf(stderr, "2. To execute Index in Map Reduce Library version 1:\n");
     fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Index ../input ../output\n");
     fprintf(stderr, "3. To execute Search in Map Reduce Library version 1:\n");
-    fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Search \"item1 item2\" ./output\n\n");
+    fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Search ../input ../output \"item1 item2\"\n\n");
 
     return 0;
 }

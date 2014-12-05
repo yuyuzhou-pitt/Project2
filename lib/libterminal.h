@@ -12,8 +12,9 @@ typedef struct OptionsStruct{
     char option3[128]; //i.e.: procedure name
     char option4[1024]; //i.e.: input file, will be item ("item1 item2") if searching
     char option5[1024]; //i.e.: output file
+    char option6[1024]; //i.e.: output file
     char action[30]; // split, index, or search, will also be the temp result directory
-    char items[128]; // items, e.g.: "item1"
+    char item[128]; // items, e.g.: "item1"
     char remote_ipstr[100];
     char remote_port[6];
 }OptionsStruct;
