@@ -1,0 +1,3 @@
+When mapping (wordcount), please
+1. ignore case (i.e.: APPLE == apple)
+2. skip all special charators (the accepted charators are: [a-z][A-Z][0-9])
