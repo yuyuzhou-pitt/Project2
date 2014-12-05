@@ -1,0 +1,1 @@
+quota	doc1	3	doc2	1

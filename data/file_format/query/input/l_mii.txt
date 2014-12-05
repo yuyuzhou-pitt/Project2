@@ -1,0 +1,12 @@
+large	doc1	2	doc2	1
+leads,	doc1	2	doc2	1
+limit	doc1	2	doc2	1
+limited	doc1	2	doc2	1
+linked	doc1	2	doc2	1
+lists	doc1	2	doc2	1
+local	doc1	2	doc2	1
+locally	doc1	2	doc2	1
+location	doc1	2	doc2	2
+location-transparent	doc1	2	doc2	1
+locking	doc1	2	doc2	1
+links	doc1	4	doc2	1

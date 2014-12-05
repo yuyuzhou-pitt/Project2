@@ -1,0 +1,8 @@
+rather	doc1	3	doc2	1
+re-established	doc1	3	doc2	1
+re-reading	doc1	3	doc2	1
+record	doc1	3	doc2	1
+requests	doc1	3	doc2	1
+require	doc1	3	doc2	1
+re-establishing	doc1	4	doc2	1
+read	doc1	4	doc2	1

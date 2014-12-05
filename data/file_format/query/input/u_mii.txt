@@ -1,0 +1,11 @@
+uncommon	doc1	3	doc2	1
+university	doc1	3	doc2	1
+updated	doc1	3	doc2	1
+updating	doc1	3	doc2	1
+use	doc1	3	doc2	2
+used.	doc1	3	doc2	1
+users	doc1	3	doc2	2
+users;	doc1	3	doc2	1
+uses	doc1	3	doc2	3
+usual	doc1	3	doc2	1
+university	doc1	4	doc2	1

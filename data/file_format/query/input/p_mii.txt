@@ -1,0 +1,13 @@
+part	doc1	3	doc2	1
+particularly	doc1	3	doc2	1
+path	doc1	3	doc2	1
+per	doc1	3	doc2	2
+perceived	doc1	3	doc2	1
+physical	doc1	3	doc2	1
+portions	doc1	3	doc2	1
+present	doc1	3	doc2	1
+primary	doc1	3	doc2	1
+promises	doc1	3	doc2	1
+problems	doc1	4	doc2	1
+project,	doc1	4	doc2	1
+project.	doc1	4	doc2	1

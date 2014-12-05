@@ -1,0 +1,10 @@
+than	doc1	3	doc2	1
+that	doc1	3	doc2	3
+the	doc2	28	doc1	3
+this	doc1	3	doc2	1
+time-out.	doc1	3	doc2	1
+to	doc2	12	doc1	3
+traditional	doc1	3	doc2	1
+tree	doc1	3	doc2	1
+trusted	doc1	3	doc2	1
+this	doc1	4	doc2	2

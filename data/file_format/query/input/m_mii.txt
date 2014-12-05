@@ -1,0 +1,14 @@
+mailbox.	doc1	2	doc2	1
+maintained	doc1	2	doc2	1
+makes	doc1	2	doc2	1
+may	doc1	2	doc2	2
+mechanism.	doc1	2	doc2	1
+message	doc1	2	doc2	1
+model.	doc1	2	doc2	1
+modified	doc1	2	doc2	1
+mountpoints	doc1	2	doc2	1
+move	doc1	2	doc2	1
+must	doc1	2	doc2	1
+mellon	doc1	4	doc2	1
+mellon.	doc1	4	doc2	1
+message	doc1	4	doc2	1

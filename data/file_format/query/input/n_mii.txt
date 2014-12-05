@@ -1,0 +1,10 @@
+name	doc1	2	doc2	1
+named	doc1	2	doc2	2
+need	doc1	2	doc2	1
+needed,	doc1	2	doc2	1
+needs	doc1	2	doc2	1
+network	doc1	2	doc2	2
+networked	doc1	2	doc2	1
+not	doc2	3	doc1	2
+note	doc1	2	doc2	1
+notify	doc1	2	doc2	1

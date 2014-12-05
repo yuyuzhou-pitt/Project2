@@ -1,0 +1,8 @@
+back	doc1	5	doc2	1
+based	doc1	5	doc2	1
+be	doc1	5	doc2	1
+being	doc1	5	doc2	1
+benefits	doc1	5	doc2	1
+between	doc1	5	doc2	1
+buffered	doc1	5	doc2	1
+by	doc1	5	doc2	4

@@ -1,0 +1,14 @@
+occur	doc1	3	doc2	1
+of	doc2	13	doc1	3
+on	doc2	5	doc1	3
+only	doc1	3	doc2	1
+open	doc1	3	doc2	1
+operation	doc1	3	doc2	1
+operations	doc1	3	doc2	1
+or	doc1	3	doc2	3
+order	doc1	3	doc2	1
+original	doc1	3	doc2	1
+other	doc1	3	doc2	1
+outage.	doc1	3	doc2	1
+over	doc1	3	doc2	1
+once	doc1	4	doc2	1

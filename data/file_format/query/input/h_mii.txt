@@ -1,0 +1,4 @@
+handling	doc1	2	doc2	1
+has	doc1	2	doc2	1
+have	doc1	2	doc2	1
+homogeneous,	doc1	2	doc2	1

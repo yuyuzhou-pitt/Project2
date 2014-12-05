@@ -1,0 +1,1 @@
+groups.	doc1	5	doc2	1

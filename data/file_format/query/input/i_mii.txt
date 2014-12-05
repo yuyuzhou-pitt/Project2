@@ -1,0 +1,13 @@
+if	doc1	2	doc2	1
+implements	doc1	2	doc2	1
+in	doc2	7	doc1	2
+including	doc1	2	doc2	1
+increased	doc1	2	doc2	1
+indeed	doc1	2	doc2	1
+inform	doc1	2	doc2	1
+involves	doc1	2	doc2	1
+is	doc2	10	doc1	2
+it	doc1	2	doc2	1
+itself.	doc1	2	doc2	1
+it	doc1	4	doc2	4
+its	doc1	4	doc2	1

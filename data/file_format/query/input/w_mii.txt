@@ -1,0 +1,9 @@
+was	doc1	3	doc2	2
+which	doc1	3	doc2	1
+while	doc1	3	doc2	1
+within	doc1	3	doc2	1
+without	doc1	3	doc2	2
+workstations.	doc1	3	doc2	1
+write	doc1	3	doc2	1
+weak	doc1	4	doc2	1
+when	doc1	4	doc2	2

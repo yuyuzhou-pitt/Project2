@@ -1,0 +1,13 @@
+databases	doc1	5	doc2	1
+databases.	doc1	5	doc2	1
+decision	doc1	5	doc2	1
+deliberate	doc1	5	doc2	1
+deployments	doc1	5	doc2	1
+design	doc1	5	doc2	1
+developed	doc1	5	doc2	1
+directed	doc1	5	doc2	1
+directories	doc1	5	doc2	2
+discarded	doc1	5	doc2	1
+disk	doc1	5	doc2	1
+distributed	doc1	5	doc2	2
+does	doc1	5	doc2	2
