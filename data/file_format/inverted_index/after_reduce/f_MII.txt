@@ -1,0 +1,9 @@
+failure,	doc1	5	doc2	1
+feature	doc1	5	doc2	1
+file	doc2	12	doc2	5
+file.	doc1	5	doc2	1
+files	doc1	5	doc2	4
+files,	doc1	5	doc2	1
+filesystem	doc1	5	doc2	3
+for	doc2	9	doc1	5
+file	doc1	4	doc2	1

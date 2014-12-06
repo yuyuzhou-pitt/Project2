@@ -1,0 +1,28 @@
+a	doc2	7
+a	doc2	8	doc1	2
+a	doc1	5
+a	doc2	2	doc1	2
+a	doc1	1
+access	doc1	5	doc2	2
+administrators	doc1	5	doc2	2
+after	doc1	5	doc2	2
+all	doc1	5	doc2	1
+allows	doc1	5	doc2	1
+also	doc1	5	doc2	1
+amount	doc1	5	doc2	1
+an	doc1	5	doc2	2
+and	doc2	2	doc1	2
+and	doc2	3	doc1	1
+and	doc2	4	doc1	1
+and	doc2	4	doc1	1
+another	doc1	5	doc2	1
+any	doc1	5	doc2	1
+are	doc1	5	doc2	5
+areas	doc1	5	doc2	1
+as	doc1	5	doc2	2
+assigned	doc1	5	doc2	1
+at	doc1	5	doc2	1
+authentication,	doc1	5	doc2	1
+afs	doc2	11	doc1	4
+andrew	doc1	4	doc2	6
+as	doc1	4	doc2	1
