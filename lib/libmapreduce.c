@@ -57,7 +57,7 @@ int Split(char *file, char *target_dir){
 }
 
 /*all the split file will be store in the directory .Single*/
-int Search(char *file, char *item, char *target_dir){
+int Search(char *file, char *term, char *target_dir){
     FILE *s_fp;
     char *line = NULL;
     size_t len = 0;
@@ -75,13 +75,13 @@ int Search(char *file, char *item, char *target_dir){
     int aN;
     int bingo = 0;
     char target_file[1024];
-    snprintf(target_file, sizeof(target_file), "%s/%s.txt", target_dir, item);
+    snprintf(target_file, sizeof(target_file), "%s/%s.txt", target_dir, term);
     while ((n_read = getline(&line, &len, s_fp)) != -1) {
         str2array(str_array, line, '\t');
-        if(strcmp(item, str_array->items[0]) == 0){
+        if(strcmp(term, str_array->terms[0]) == 0){
             bingo = 1;
             for(aN=1;aN < str_array->count;aN=aN+2){
-                snprintf(w_line, sizeof(w_line), "%s\t%s\n", str_array->items[aN], str_array->items[aN+1]);
+                snprintf(w_line, sizeof(w_line), "%s\t%s\n", str_array->terms[aN], str_array->terms[aN+1]);
                 writeFile(w_line, strlen(w_line), target_file, "a");
             }
         }
@@ -90,7 +90,7 @@ int Search(char *file, char *item, char *target_dir){
     }
 
     if(bingo == 0){
-        snprintf(w_line, sizeof(w_line), "Sorry, item \"%s\" found nowhere.\n", item);
+        snprintf(w_line, sizeof(w_line), "Sorry, term \"%s\" found nowhere.\n", term);
         writeFile(w_line, strlen(w_line), target_file, "a");
     }
 
