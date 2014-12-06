@@ -128,7 +128,7 @@ typedef struct Execute_Sevice{
     uint32_t ts; //timestamp
     int data_is_file_or_dir; // 0 is file, for multiply and etc; 1 is dir, for minigoogle
     char exec_action[30]; // Split, Index, or Search
-    char search_item[1024]; // "item1 item2"
+    char search_term[1024]; // "term1 term2"
     int num_parameter;
     int para1_type; //int:0, float:1, char:2; default is 0
     int para1_dimension;
@@ -151,7 +151,7 @@ typedef struct Execute_Ack{
     uint32_t ts; //timestamp
     int data_is_file_or_dir; // 0 is file, for multiply and etc; 1 is dir, for minigoogle
     char exec_action[30]; // Split, Index, or Search
-    char search_item[1024]; // "item1 item2"
+    char search_term[1024]; // "term1 term2"
 }Execute_Ack;
 
 typedef struct Execute_Respons{ 
@@ -164,7 +164,7 @@ typedef struct Execute_Respons{
     uint32_t ts;
     int data_is_file_or_dir; // 0 is file, for multiply and etc; 1 is dir, for minigoogle
     char exec_action[30]; // Split, Index, or Search
-    char search_item[1024]; // "item1 item2"
+    char search_term[1024]; // "term1 term2"
     int num_parameter;
     int respons_type;
     int respons_dimension;

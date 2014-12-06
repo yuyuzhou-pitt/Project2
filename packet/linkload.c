@@ -9,7 +9,7 @@
 
 /*list initialization*/
 int *initLoadSeq(){
-    loadBalanceLinkHead = (LoadLink *)malloc(sizeof(LoadLink)); //head->next->key is the first item
+    loadBalanceLinkHead = (LoadLink *)malloc(sizeof(LoadLink)); //head->next->key is the first term
     loadBalanceLinkEnd = (LoadLink *)malloc(sizeof(LoadLink)); //dummy rear, to protect dequeue from an empty list
 
     loadBalanceLinkHead->next = loadBalanceLinkEnd;
@@ -21,9 +21,9 @@ int *initLoadSeq(){
 /*list initialization*/
 LoadLink *initlist(){
     LoadLink *head, *z;
-    head = (LoadLink *)malloc(sizeof *head); //head->next->key is the first item
+    head = (LoadLink *)malloc(sizeof *head); //head->next->key is the first term
     z = (LoadLink *)malloc(sizeof *head); //dummy rear, to protect dequeue from an empty list
-    //head = (LoadLink *)calloc(1, sizeof *head); //head->next->key is the first item
+    //head = (LoadLink *)calloc(1, sizeof *head); //head->next->key is the first term
     //z = (LoadLink *)calloc(1, sizeof *head); //dummy rear, to protect dequeue from an empty list
     head->next = z;
     z->next = z; 

@@ -64,7 +64,7 @@ static void sig_alrm(int signo){
     siglongjmp(jmpbuf,1);
 }
 
-SplitStr *items; //the items to be search
+SplitStr *terms; //the terms to be search
 
 /*handle the server connection*/
 void connectServer(void *arg){
@@ -247,7 +247,7 @@ sendagain:
     pthread_exit(0);
 }
 
-int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_items){
+int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_terms){
     /*clear temp directory before execution*/
     char temp_dir[128];
     snprintf(temp_dir, sizeof(temp_dir), "../.%s", exec_options->action);
@@ -269,8 +269,8 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_items){
     char result_file[128];
     char output_file[128];
     int iN;
-    for(iN=0;iN < s_items->count;iN++){
-        fprintf(stderr, "Searching for item: %s...\n", s_items->items[iN]);
+    for(iN=0;iN < s_terms->count;iN++){
+        fprintf(stderr, "Searching for term: %s...\n", s_terms->terms[iN]);
         in_dp = opendir (input_dir);
         if (in_dp == NULL){
             perror ("Couldn't open the directory");
@@ -289,12 +289,12 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_items){
                 continue;
             }
 
-            if(s_items->items[iN][0] == in_ep->d_name[0]){
+            if(s_terms->terms[iN][0] == in_ep->d_name[0]){
                 file_found = 1;
                 hash_index = iN % requested_servers->response_number;
                 snprintf(file_path, sizeof(file_path), "%s/%s", input_dir, in_ep->d_name);
 
-                snprintf(exec_options->item, sizeof(exec_options->item), s_items->items[iN]);
+                snprintf(exec_options->term, sizeof(exec_options->term), s_terms->terms[iN]);
                 snprintf(exec_options->option4, sizeof(exec_options->option4),
                          "%s", file_path); //exec_pkt->Data.para_data.data_str
                 snprintf(exec_options->remote_ipstr, sizeof(exec_options->remote_ipstr),
@@ -316,17 +316,17 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_items){
         }
         (void) closedir (in_dp);
 
-        snprintf(output_file, sizeof(result_file), "%s/%s.txt", exec_options->option5, s_items->items[iN]); // the result from index
+        snprintf(output_file, sizeof(result_file), "%s/%s.txt", exec_options->option5, s_terms->terms[iN]); // the result from index
 
         /*check the result from remote*/
         if(file_found == 1){
-            snprintf(result_file, sizeof(result_file), "../.%s_%s/%s.txt", addrstr, SINGLE, s_items->items[iN]); // the result from index
+            snprintf(result_file, sizeof(result_file), "../.%s_%s/%s.txt", addrstr, SINGLE, s_terms->terms[iN]); // the result from index
             if(copy_file(result_file, output_file) != 0)
                 fprintf(stderr, "Error copying file: %s!\n", output_file);
         }
         else{
             char w_line[128];
-            snprintf(w_line, sizeof(w_line), "Sorry, item \"%s\" found nowhere.\n", s_items->items[iN]);
+            snprintf(w_line, sizeof(w_line), "Sorry, term \"%s\" found nowhere.\n", s_terms->terms[iN]);
             writeFile(w_line, strlen(w_line), output_file, "w");
         }
     }
@@ -429,17 +429,17 @@ void *execlient(void *arg){
         indexJobTracker(exec_options);
 
         fprintf(stderr, "###### Start sorting: %s ######\n", exec_options->option4);
-        /*sort the file to put the same item in the same file (AlphaBeta)*/
+        /*sort the file to put the same term in the same file (AlphaBeta)*/
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", SORT);
         indexJobTracker(exec_options);
 
         fprintf(stderr, "###### Start reducing: %s ######\n", exec_options->option4);
-        /*reduce the file to merge the same item (master inverted index) (AlphaBeta)*/
+        /*reduce the file to merge the same term (master inverted index) (AlphaBeta)*/
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", MII); // the result of master inverted index
         indexJobTracker(exec_options);
     }
     else if(strcmp(exec_options->option3, SEARCH) == 0){
-        fprintf(stderr, "###### Start searching item(s): %s ######\n", exec_options->option6);
+        fprintf(stderr, "###### Start searching term(s): %s ######\n", exec_options->option6);
 
         /*create the output directory if not exists*/
         struct stat st = {0};
@@ -447,17 +447,17 @@ void *execlient(void *arg){
             mkdir(exec_options->option5, 0700);
         }
 
-        /*turn the items into array*/
-        items = (SplitStr *)malloc(sizeof(SplitStr));
-        str2array(items, exec_options->option6, ' ');  //split by space
+        /*turn the terms into array*/
+        terms = (SplitStr *)malloc(sizeof(SplitStr));
+        str2array(terms, exec_options->option6, ' ');  //split by space
 
-        /*start the searching job, handle with one item*/
+        /*start the searching job, handle with one term*/
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", SINGLE);
-        searchJobTracker(exec_options, items);
+        searchJobTracker(exec_options, terms);
 
         /*start the searching job, merge the result*/
         //snprintf(exec_options->action, sizeof(exec_options->action), "%s", MERGE);
-        //searchJobTracker(exec_options, items);
+        //searchJobTracker(exec_options, terms);
         fprintf(stderr, "###### Searching task done, check your result please: %s. ######\n", exec_options->option5);
     }
 

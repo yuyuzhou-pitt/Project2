@@ -193,7 +193,7 @@ char *trimwhitespace(char *str)
 *   start_n = res_size - start_index
 */
 int str2IntArray(int res[], int res_size, int start_index, char str[], int start_n){
-    char *p = strtok (str, " "); // p is the first item
+    char *p = strtok (str, " "); // p is the first term
     int i;
     i = start_index; //the start index of the int array
     

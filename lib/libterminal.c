@@ -118,12 +118,12 @@ int *str2array(SplitStr *result, char *a_str, const char a_delim){
     int iN = 0;
     while (token){
         assert(idx < count);
-        snprintf(result->items[iN], sizeof(result->items[iN]), strdup(token));
+        snprintf(result->terms[iN], sizeof(result->terms[iN]), strdup(token));
         token = strtok(0, delim);
         iN ++;
     }
     if(idx == count - 1){
-        snprintf(result->items[0], sizeof(result->items[0]), a_str);
+        snprintf(result->terms[0], sizeof(result->terms[0]), a_str);
     }
 
     return 0;
@@ -293,7 +293,7 @@ int helpMiniGoogle(){
     fprintf(stderr, "2. To execute Index in Map Reduce Library version 1:\n");
     fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Index ../input ../output\n");
     fprintf(stderr, "3. To execute Search in Map Reduce Library version 1:\n");
-    fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Search ../input ../output \"item1 item2\"\n\n");
+    fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Search ../input ../output \"term1 term2\"\n\n");
 
     return 0;
 }

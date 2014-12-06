@@ -31,7 +31,7 @@ int *initExecuteSeq(){
 /*list initialization*/
 Packet_Seq *initListSeq(){
     Packet_Seq *head, *z;
-    head = (Packet_Seq *)malloc(sizeof *head); //head->next->key is the first item
+    head = (Packet_Seq *)malloc(sizeof *head); //head->next->key is the first term
     z = (Packet_Seq *)malloc(sizeof *head); //dummy rear, to protect dequeue from an empty list
 
     head->next = z;

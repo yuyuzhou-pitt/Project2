@@ -123,7 +123,7 @@ int main(int argc, char *argv[]){
     else if(strcmp(argv[1], "execute") == 0){
        /* execute format:
         * fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Index ../input ../output\n");
-        * fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Search ../input ../output \"item1 item2\"");
+        * fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Search ../input ../output \"term1 term2\"");
         *
         * the argc number could be 7 or 8.
         */
