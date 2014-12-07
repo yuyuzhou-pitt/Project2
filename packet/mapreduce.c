@@ -22,7 +22,8 @@
 #include "../lib/libmath.h"
 #include "../lib/libsocket.h"
 #include "../lib/libfile.h"
-#include "../lib/libmapreduce.h"
+//#include "../lib/libmapreduce.h"
+#include "../lib/libmr.h"
 
 #include "linkseq.h"
 
@@ -53,19 +54,25 @@ int callMapReduce(OptionsStruct *result_options, char *client_ip, char *server_i
     }
     else if(strcmp(received_packet->Data.exec_action, WORDCOUNT) == 0){
         fprintf(stdout, "Wordcounting file %s.\n", received_packet->Data.para_data.data_str);
+
+        /*all the wordcount file will be store in the directory .Wordcount*/
+        Wordcount(received_packet->Data.para_data.data_str, result_options->option4);
     }
     else if(strcmp(received_packet->Data.exec_action, SORT) == 0){
         fprintf(stdout, "Sorting file %s.\n", received_packet->Data.para_data.data_str);
     }
     else if(strcmp(received_packet->Data.exec_action, MII) == 0){
         fprintf(stdout, "Sorting file %s.\n", received_packet->Data.para_data.data_str);
+
+        /*all the reduced file will be store in the temp directory .MII*/
+        Reduce(received_packet->Data.para_data.data_str, result_options->option4);
     }
     /*search action*/
     else if(strcmp(received_packet->Data.exec_action, SINGLE) == 0){
         fprintf(stdout, "Searching term \"%s\" in file %s.\n",  received_packet->Data.search_term, 
                 received_packet->Data.para_data.data_str);
 
-        /*all the split file will be store in the directory .Single*/
+        /*all the search result file will be store in the temp directory .Single*/
         Search(received_packet->Data.para_data.data_str, received_packet->Data.search_term, result_options->option4);
     }
     else if(strcmp(received_packet->Data.exec_action, MERGE) == 0){

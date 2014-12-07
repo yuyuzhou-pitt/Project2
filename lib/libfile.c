@@ -367,10 +367,9 @@ struct timeval getUTimeStamp(){
 }
 
 /* return file extention when delimiter is '.', or
- * return filename when delimiter is '/'
- * */
+ * return filename when delimiter is '/'*/
 const char *getStrAfterDelimiter(const char *filename, char delimiter) {
-    const char *dot = strrchr(filename, delimiter);
+    const char *dot = strrchr(filename, delimiter); //Locate last occurrence of character in string
     if(!dot || dot == filename) return "";
     return dot + 1;
 }
