@@ -1,98 +1,171 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <time.h>
 #include <unistd.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include "libmapreduce.h"
 
-#include "liblog.h"
-#include "libfile.h"
-#include "libterminal.h"
-#include "../packet/packet.h"
+static FILE* wrdcount_file;
+static CharType chtype;
+static CharType prv_chtype;
+static char ch;
+static char token[_MAX_WORDLEN_];
+static int top;
+static errbit;
 
-char logmsg[128];
+int initWordcount(char *file, char *target_dir){
+	errbit=0;
+	ch = 0;
+	chtype=begin;
+	prv_chtype=begin;
 
-/* Use below file fucntion to split file
- * int writeFile(char *str, int size, char *file, char *writeMode);
- * int readFile(char *str, int size, char *file);
-*/
+	CLEARTOEK;
+	memset((char*)token,0,_MAX_WORDLEN_);
 
-int Split(char *file, char *target_dir){
-    char split_str[SPLIT_BLOCK];
-
-    FILE *split_fp;
-
-    if(access(file, F_OK) < 0) {
-        snprintf(logmsg, sizeof(logmsg), "readfile: File not found: %s\n", file);
-        logging(LOGFILE, logmsg);
+	if(access(file, F_OK) < 0) {
+		errbit=1;
         return -1;
     }
 
-    if ((split_fp = fopen(file,"r")) < 0){
-        snprintf(logmsg, sizeof(logmsg), "readfile: Failed to open file: %s\n", file);
-        logging(LOGFILE, logmsg);
+    if ((wrdcount_file = fopen(file,"r")) < 0){
+    	errbit=2;
         return -1;
     }
-
-    struct timeval t_stamp;
-    char target_file[1024];
-    int count;
-    while((count = fread(split_str, 1, SPLIT_BLOCK, split_fp)) > 0){
-        int f_index = count;
-        while(count == SPLIT_BLOCK && (split_str[f_index] != ' ' && split_str[f_index] != '\n')){
-            f_index--;
-        }
-        fseek(split_fp, f_index-count, SEEK_CUR);
-        t_stamp = getUTimeStamp();
-        /*please use .txt to be the file extension (checking in client/socket_execute.c:jobTracker())*/
-        snprintf(target_file, sizeof(target_file), "%s/%s___%d.%d.txt", target_dir, 
-                 getStrAfterDelimiter(file, '/'), t_stamp.tv_sec, t_stamp.tv_usec);
-        snprintf(logmsg, sizeof(logmsg), "Split: write into part file: %s\n", target_file);logging(LOGFILE, logmsg);
-        writeFile(split_str, f_index, target_file, "w");
-    }
-
-    fclose(split_fp);
-
     return 0;
 }
 
-/*all the split file will be store in the directory .Single*/
-int Search(char *file, char *term, char *target_dir){
-    FILE *s_fp;
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t n_read;
+int getToken(){
+	bool breakflag=false;
+	do{
+		GETCHAR;
+		switch(chtype){
+			case (character):
+				switch(prv_chtype){
+						case (begin):
+							APPENDTOEKN;
+							prv_chtype=character;
+							break;
+						case (space):
+							APPENDTOEKN;
+							prv_chtype=character;
+							break;
+						case (puncmark):
+							prv_chtype=puncmark;
+							break;
+						case (character):
+							APPENDTOEKN;
+							prv_chtype=character;
+							break;
+				}break;
+			case (space):
+				switch(prv_chtype){
+						case (begin):
+							prv_chtype=space;
+							break;
+						case (space):
+							prv_chtype=space;
+							break;
+						case (puncmark):
+							prv_chtype=space;
+							break;
+						case (character):
+							FULLFILLTOKEN;
+							breakflag=true;
+							prv_chtype=space;
+							break;
+				}break;
+			case (puncmark):
+				switch(prv_chtype){
+						case (begin):
+							prv_chtype=puncmark;
+							break;
+						case (space):
+							prv_chtype=space;
+							break;
+						case (puncmark):
+							prv_chtype=puncmark;
+							break;
+						case (character):
+							FULLFILLTOKEN;
+							breakflag=true;
+							prv_chtype=puncmark;
+							break;
+				}break;
+			case (endoffile):
+				switch(prv_chtype){
+						case (begin):
+							breakflag=true;
+							break;
+						case (space):
+							breakflag=true;
+							break;
+						case (puncmark):
+							breakflag=true;
+							break;
+						case (character):
+							FULLFILLTOKEN;
+							breakflag=true;
+							break;
+				}break;
+			default:
+				breakflag=true;
+		}
+		if(breakflag){
+			break;
+		}
+	}while(true);
+	return 0;
+}
 
-    if ((s_fp = fopen(file,"r")) < 0){
-        snprintf(logmsg, sizeof(logmsg), "readfile: Failed to open file: %s\n", file);
-        logging(LOGFILE, logmsg);
-        return -1;
-    }
+int fcmp(const void *p1,const void *p2)
+{
+	return (strcmp((char *)p1, (char*)p2));
+}
 
-    SplitStr *str_array;
-    str_array = (SplitStr *)malloc(sizeof(SplitStr));
-    char w_line[1024];
-    int aN;
-    int bingo = 0;
-    char target_file[1024];
-    snprintf(target_file, sizeof(target_file), "%s/%s.txt", target_dir, term);
-    while ((n_read = getline(&line, &len, s_fp)) != -1) {
-        str2array(str_array, line, '\t');
-        if(strcmp(term, str_array->terms[0]) == 0){
-            bingo = 1;
-            for(aN=1;aN < str_array->count;aN=aN+2){
-                snprintf(w_line, sizeof(w_line), "%s\t%s\n", str_array->terms[aN], str_array->terms[aN+1]);
-                writeFile(w_line, strlen(w_line), target_file, "a");
-            }
-        }
-        //snprintf(target_file, sizeof(target_file), "%s/%c_mii.txt", target_dir, line[0]);
-        //writeFile(line, n_read, target_file, "a");
-    }
+int Wordcount(char *file, char *target_dir){
+	char wordset[_MAX_WORDNUMBER_][_MAX_WORDLEN_];
+	int wstop=-1,count=0,ret=0;
 
-    if(bingo == 0){
-        snprintf(w_line, sizeof(w_line), "Sorry, term \"%s\" found nowhere.\n", term);
-        writeFile(w_line, strlen(w_line), target_file, "a");
-    }
+	initWordcount(file,target_dir);
+	struct timeval t_stamp = getUTimeStamp();
+	char full_file_path[_MAX_FILEBUFFERLEN_];
+	//open file to write into
+	char* ctmpptr = strstr(file,".txt"); memset(ctmpptr,0,strlen(ctmpptr)*sizeof(char)); *ctmpptr='\0';
+	snprintf(full_file_path, sizeof(full_file_path), "%s/%s.txt___%d.%d.txt", target_dir, 
+                 file, (int)(t_stamp.tv_sec),(int)(t_stamp.tv_usec));
+	FILE* fout=fopen(full_file_path,"w");
+	if(fout){
+		for(getToken();chtype!=endoffile;getToken()){
+			strcpy(wordset[++wstop],token);
+			CLEARTOEK;
+		}
+		if(prv_chtype==character){
+			strcpy(wordset[++wstop],token);	
+		}
+		//sort
+		qsort(wordset, wstop, _MAX_WORDLEN_*(sizeof(char)), fcmp);
+		//write into file
+		int i=0,j=0,sum=0;
+		for(i=0;i<wstop;i=j){
+			for(sum=0,j=i; (strcmp(wordset[j],wordset[i])==0) && j<wstop; ++j,++sum)	;
+			fprintf(fout,"%s %d\n",wordset[i],sum);
+		}
+		fclose(fout);
+	}else{
+		return -1;
+	}
+	return 0;
+}
 
-    fclose(s_fp);
+int WordSort(char *srcdir, char *destdir, int totalworker, int currentno)
+{
+	
+	return 0;
+}
+
+int main(int argc, char* argv[]){
+	Wordcount(argv[1],argv[2]);
+	printf("wordcount Done\n");
+	//Wordsort(argv[1],argv[2]);
+	return 0;
 }
