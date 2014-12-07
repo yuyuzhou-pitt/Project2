@@ -66,6 +66,8 @@ static void sig_alrm(int signo){
 
 SplitStr *terms; //the terms to be search
 
+int i_thread = 0;
+
 /*handle the server connection*/
 void connectServer(void *arg){
 //void connectServer(OptionsStruct *exec_options){
@@ -247,6 +249,52 @@ sendagain:
     pthread_exit(0);
 }
 
+int sortJobTracker(OptionsStruct *exec_options){
+    /*clear temp directory before execution*/
+    char temp_dir[128];
+    snprintf(temp_dir, sizeof(temp_dir), "../.%s", exec_options->action);
+    struct stat st = {0};
+    if (stat(temp_dir, &st) != -1) {
+        rmrf(temp_dir);
+    }
+
+    struct timeval t_stamp;
+
+    char new_dir[128];
+    char src_dir[128];
+    //int i_thread = 0; // Thread iterator
+    snprintf(src_dir, sizeof(src_dir), exec_options->option4);
+    int sN;
+    for (sN=0;sN < requested_servers->response_number;sN++){
+        if (i_thread == NTHREADS){
+            i_thread = 0;
+        }
+
+        t_stamp = getUTimeStamp();
+        snprintf(new_dir, sizeof(new_dir), "%s___%d_%d", src_dir, t_stamp.tv_sec, t_stamp.tv_usec);
+        copy_dir(src_dir, new_dir);
+
+        snprintf(exec_options->option4, sizeof(exec_options->option4),
+                 "%s", new_dir); //exec_pkt->Data.para_data.data_str
+        snprintf(exec_options->remote_ipstr, sizeof(exec_options->remote_ipstr),
+                 "%s", requested_servers->portMapperTable[sN].server_ip); //socket host
+        snprintf(exec_options->remote_port, sizeof(exec_options->remote_port),
+                 "%s", requested_servers->portMapperTable[sN].port_number); // socket port
+
+        exec_options->server_no = sN;
+        exec_options->server_number = requested_servers->response_number;
+
+        fprintf(stderr, "Server %s (%d of %d) sort temp directory: %s.\n", 
+                exec_options->remote_ipstr, sN+1, requested_servers->response_number, exec_options->option4);
+
+        /*connectServer(exec_options);*/
+        pthread_create(&connect_id[i_thread], NULL, &connectServer, (void **)exec_options);
+        pthread_join(connect_id[i_thread], NULL);
+    }
+
+    return 0;
+}
+
 int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_terms){
     /*clear temp directory before execution*/
     char temp_dir[128];
@@ -261,7 +309,7 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_terms){
     struct dirent *in_ep;
 
     int hash_index = 0;
-    int i_thread = 0; // Thread iterator
+    //int i_thread = 0; // Thread iterator
     char file_path[128];
     char input_dir[128];
     snprintf(input_dir, sizeof(input_dir), exec_options->option4);
@@ -331,7 +379,6 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_terms){
         }
     }
 
-
     return 0;
 }
 
@@ -351,7 +398,7 @@ int indexJobTracker(OptionsStruct *exec_options){
     in_dp = opendir (exec_options->option4);
     int file_count = 0;
     int hash_index = 0;
-    int i_thread = 0; // Thread iterator
+    //int i_thread = 0; // Thread iterator
     char file_path[128];
     char input_dir[128];
     snprintf(input_dir, sizeof(input_dir), exec_options->option4);
@@ -396,6 +443,7 @@ int indexJobTracker(OptionsStruct *exec_options){
 
 /* thread for lsrp-client */
 void *execlient(void *arg){
+    //int i_thread = 0;
 
     OptionsStruct *exec_options;
     exec_options = (OptionsStruct *)malloc(sizeof(OptionsStruct));
@@ -431,12 +479,12 @@ void *execlient(void *arg){
         fprintf(stderr, "###### Start sorting: %s ######\n", exec_options->option4);
         /*sort the file to put the same term in the same file (AlphaBeta)*/
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", SORT);
-        indexJobTracker(exec_options);
+        sortJobTracker(exec_options);
 
-        fprintf(stderr, "###### Start reducing: %s ######\n", exec_options->option4);
+        //fprintf(stderr, "###### Start reducing: %s ######\n", exec_options->option4);
         /*reduce the file to merge the same term (master inverted index) (AlphaBeta)*/
-        snprintf(exec_options->action, sizeof(exec_options->action), "%s", MII); // the result of master inverted index
-        indexJobTracker(exec_options);
+        //snprintf(exec_options->action, sizeof(exec_options->action), "%s", MII); // the result of master inverted index
+        //indexJobTracker(exec_options);
     }
     else if(strcmp(exec_options->option3, SEARCH) == 0){
         fprintf(stderr, "###### Start searching term(s): %s ######\n", exec_options->option6);

@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <sys/time.h>
 #include <time.h>
+#include <dirent.h>
 #include "liblog.h"
 
 int copy_file(char *old_filename, char  *new_filename){
@@ -42,6 +43,37 @@ int copy_file(char *old_filename, char  *new_filename){
 
     fclose(ptr_new);
     fclose(ptr_old);
+    return  0;
+}
+
+int copy_dir(char *old_dir, char *new_dir){
+    /*create the output directory if not exists*/
+    struct stat st = {0};
+    if (stat(new_dir, &st) == -1) {
+        mkdir(new_dir, 0700);
+    }
+
+    /*go through the files in the directory*/
+    DIR *in_dp;
+    struct dirent *in_ep;
+
+    in_dp = opendir (old_dir);
+    char src_file[128];
+    char dst_file[128];
+    if (in_dp != NULL){
+        while (in_ep = readdir (in_dp)){
+            if(strcmp(in_ep->d_name, ".") == 0 || strcmp(in_ep->d_name, "..") == 0){
+                continue;
+            }
+            snprintf(src_file, sizeof(src_file), "%s/%s", old_dir, in_ep->d_name);
+            snprintf(dst_file, sizeof(dst_file), "%s/%s", new_dir, in_ep->d_name);
+            copy_file(src_file, dst_file);
+        }
+        (void) closedir (in_dp);
+    }
+    else
+        perror ("Couldn't open the directory");
+
     return  0;
 }
 

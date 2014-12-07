@@ -59,7 +59,13 @@ int callMapReduce(OptionsStruct *result_options, char *client_ip, char *server_i
         Wordcount(received_packet->Data.para_data.data_str, result_options->option4);
     }
     else if(strcmp(received_packet->Data.exec_action, SORT) == 0){
-        fprintf(stdout, "Sorting file %s.\n", received_packet->Data.para_data.data_str);
+        fprintf(stdout, "Sorting directory %s on server %d of %d.\n", 
+                received_packet->Data.para_data.data_str, (received_packet->Data.server_no)+1, 
+                received_packet->Data.server_number);
+
+        /*all the wordcount file will be store in the directory .Wordcount*/
+        //Sort(received_packet->Data.para_data.data_str, result_options->option4, 
+        //     received_packet->Data.server_number, received_packet->Data.server_no);
     }
     else if(strcmp(received_packet->Data.exec_action, MII) == 0){
         fprintf(stdout, "Sorting file %s.\n", received_packet->Data.para_data.data_str);

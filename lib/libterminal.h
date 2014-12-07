@@ -17,6 +17,8 @@ typedef struct OptionsStruct{
     char term[128]; // terms, e.g.: "term1"
     char remote_ipstr[100];
     char remote_port[6];
+    int server_no;  // for sort use
+    int server_number;  // for sort use
 }OptionsStruct;
 
 /*split the string to array*/

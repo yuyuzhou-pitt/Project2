@@ -2,6 +2,7 @@
 #define __LIBFILE_H__
 
 int copy_file(char *old_filename, char  *new_filename);
+int copy_dir(char *old_dir, char *new_dir);
 int writeFile(char *str, int size, char *file, char *writeMode);
 int readFile(char *str, int size, char *file);
 int unlinkFile(char *file);
