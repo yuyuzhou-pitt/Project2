@@ -1,3 +1,6 @@
+#ifndef __LIBMAPREDUCE__H___
+#define __LIBMAPREDUCE__H___
+
 #include "libfile.h"
 
 #define _MAX_WORDLEN_ 32 
@@ -46,8 +49,10 @@ typedef struct _interMediate{
 int initWordcount(char *file, char *target_dir);
 int getToken();
 int Wordcount(char *file, char *target_dir);
-int Wordsort(char *file, char *target_dir);
+int WordSort(char *srcdir, char *destdir, int totalworker, int currentno);
 
-int letter_freq[] = {1182,1271,1513,774,687,798,711,745,445,262,264,694,1026,384,337,1203,87,745,2052,936,153,317,541,8,88,49};
+const int occur_letterscnt[] = {1182,1271,1513,774,687,798,711,745,445,262,264,694,1026,384,337,1203,87,745,2052,936,153,317,541,8,88,49};
+const int max_occur_lettercnt = 2052;
+const int total_letter = 26;
 
-
+#endif
