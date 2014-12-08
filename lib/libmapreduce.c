@@ -174,9 +174,11 @@ int Wordsort1letter(FILE* fin, FILE* foutvector, char chpattern, char* _filename
 	if(_Wswordbuff[0]>chpattern) return 0;
 	if(_Wswordbuff[0]<chpattern)
 		while( (fscanf(fin,"%s %d",(char*)_Wswordbuff,&_Wscount) >1) && _Wswordbuff[0]<chpattern ) ;
-	do{
+	while(_Wswordbuff[0]==chpattern){
 		fprintf(foutvector,"%s\t%s\t%d\n",_Wswordbuff,_filename,_Wscount);
-	}while( (fscanf(fin,"%s %d",(char*)_Wswordbuff,&_Wscount) >1) && _Wswordbuff[0]==chpattern);
+		if(fscanf(fin,"%s %d",(char*)_Wswordbuff,&_Wscount) < 2) break;
+        }
+
 	return 0;
 }
 
@@ -214,8 +216,12 @@ int WordSort1file(char *srcdir, char *destdir, int pos_start, int pos_end){
             for(j=0;j<=vtop;++j){
            		Wordsort1letter((FILE*)fin,(FILE*)(foutvector[j]),'a'+pos_start+j,(char*)file_path);
            	}
+            fclose(fin);
         }
         (void) closedir (in_dp);
+    }
+    for(i=0;i<=vtop;++i){
+        fclose(foutvector[i]);
     }
 	return 0;
 }
