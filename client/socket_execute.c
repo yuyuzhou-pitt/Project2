@@ -284,8 +284,8 @@ int sortJobTracker(OptionsStruct *exec_options){
         exec_options->server_no = sN;
         exec_options->server_number = requested_servers->response_number;
 
-        fprintf(stderr, "Server %s (%d of %d) sort temp directory: %s.\n", 
-                exec_options->remote_ipstr, sN+1, requested_servers->response_number, exec_options->option4);
+        fprintf(stderr, "Sorting directory %s on server %s (%d of %d).\n", exec_options->option4,
+                exec_options->remote_ipstr, sN+1, requested_servers->response_number);
 
         /*connectServer(exec_options);*/
         pthread_create(&connect_id[i_thread], NULL, &connectServer, (void **)exec_options);
@@ -462,6 +462,12 @@ void *execlient(void *arg){
         exit(1);
     }
 
+    /*create the output directory if not exists*/
+    struct stat st = {0};
+    if (stat(exec_options->option5, &st) == -1) {
+        mkdir(exec_options->option5, 0700);
+    }
+
     //fprintf(stderr, "requested_servers->response_number=%d.\n", requested_servers->response_number);
 
     /*client decide which action to execute*/
@@ -481,19 +487,15 @@ void *execlient(void *arg){
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", SORT);
         sortJobTracker(exec_options);
 
-        //fprintf(stderr, "###### Start reducing: %s ######\n", exec_options->option4);
+        fprintf(stderr, "###### Start reducing: %s ######\n", exec_options->option4);
         /*reduce the file to merge the same term (master inverted index) (AlphaBeta)*/
-        //snprintf(exec_options->action, sizeof(exec_options->action), "%s", MII); // the result of master inverted index
-        //indexJobTracker(exec_options);
+        snprintf(exec_options->action, sizeof(exec_options->action), "%s", MII); // the result of master inverted index
+        indexJobTracker(exec_options);
+
+        fprintf(stderr, "###### Indexing task done, check your result please: %s. ######\n", exec_options->option5);
     }
     else if(strcmp(exec_options->option3, SEARCH) == 0){
         fprintf(stderr, "###### Start searching term(s): %s ######\n", exec_options->option6);
-
-        /*create the output directory if not exists*/
-        struct stat st = {0};
-        if (stat(exec_options->option5, &st) == -1) {
-            mkdir(exec_options->option5, 0700);
-        }
 
         /*turn the terms into array*/
         terms = (SplitStr *)malloc(sizeof(SplitStr));

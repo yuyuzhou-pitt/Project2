@@ -29,6 +29,7 @@
 
 /*define the file split block size*/
 #define SPLIT_BLOCK 65536//64K
+#define WRITE_BLOCK 1048576//1MB
 //#define SPLIT_BLOCK 16384//16k
 
 /* client request will set these two params (for client execute) */
@@ -129,6 +130,7 @@ typedef struct Execute_Sevice{
     int data_is_file_or_dir; // 0 is file, for multiply and etc; 1 is dir, for minigoogle
     char exec_action[30]; // Split, Index, or Search
     char search_term[1024]; // "term1 term2"
+    char output_dir[128]; // "term1 term2"
     int server_no; // for sort use
     int server_number; // for sort use
     int num_parameter;
@@ -165,6 +167,7 @@ typedef struct Execute_Respons{
     int data_is_file_or_dir; // 0 is file, for multiply and etc; 1 is dir, for minigoogle
     char exec_action[30]; // Split, Index, or Search
     char search_term[1024]; // "term1 term2"
+    char output_dir[128]; // "term1 term2"
     int server_no; // for sort use
     int server_number; // for sort use
     int num_parameter;
