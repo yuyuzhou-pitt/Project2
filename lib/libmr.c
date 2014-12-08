@@ -118,7 +118,7 @@ int Reduce(char *file, char *target_dir){
     char mii_str[WRITE_BLOCK];
     memset(mii_str, 0, sizeof(mii_str));
     mii2str(mii_str, miitable);
-    writeFile(mii_str, strlen(mii_str)+1, target_file, "w");
+    writeFile(mii_str, strlen(mii_str), target_file, "w");
     return 0;
 }
 
@@ -148,7 +148,7 @@ int Search(char *file, char *term, char *target_dir){
             bingo = 1;
             for(aN=1;aN < str_array->count;aN=aN+2){
                 snprintf(w_line, sizeof(w_line), "%s\t%s\n", str_array->terms[aN], str_array->terms[aN+1]);
-                writeFile(w_line, sizeof(w_line), target_file, "a");
+                writeFile(w_line, strlen(w_line), target_file, "a");
             }
         }
     }
