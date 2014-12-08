@@ -104,8 +104,8 @@ int printRequestReply(Packet *packet_reply, Request_Reply *requested_servers, ch
                  "%s", packet_reply->Data.portMapperTable[index].server_ip);
         snprintf(exec_remote_port, sizeof(packet_reply->Data.portMapperTable[index].port_number), 
                  "%s", packet_reply->Data.portMapperTable[index].port_number);
-        fprintf(stdout, "\nChoose to use service on %s with port %s for load balance.\n", 
-                exec_remote_ipstr, exec_remote_port);
+        //fprintf(stdout, "\nChoose to use service on %s with port %s for load balance.\n", 
+        //        exec_remote_ipstr, exec_remote_port);
     }
     else{
         fprintf(stdout,"No service available! Please use 'list' on Port Mapper to get the available services.\n");

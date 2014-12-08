@@ -68,7 +68,7 @@ int callMapReduce(OptionsStruct *result_options, char *client_ip, char *server_i
              received_packet->Data.server_number, received_packet->Data.server_no);
     }
     else if(strcmp(received_packet->Data.exec_action, MII) == 0){
-        fprintf(stdout, "Sorting file %s.\n", received_packet->Data.para_data.data_str);
+        fprintf(stdout, "Reducing file %s.\n", received_packet->Data.para_data.data_str);
 
         /*all the reduced file will be store in the output directory*/
         Reduce(received_packet->Data.para_data.data_str, received_packet->Data.output_dir);

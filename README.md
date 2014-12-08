@@ -19,62 +19,103 @@ Project2/port-mapper/port-mapper
 Project2/server/server
 Project2/client/minigoogle
 
-+-------------------+
-| Register Services |
-+-------------------+
++----------+
+| Register |
++----------+
 
 Server register services into prot-mapper table on Port-Mapper.
 
 = Steps =
 
-1. Start port mapper daemon on Port Mapper:
+1. Start port mapper daemon on Port Mapper machine: 
+$ cd port-mapper/
 $ ./port-mapper 
 
-2. Start server daemon Server:
+2. Start server daemon on Server machine(s):
+$ cd server/
 $ ./server 
 
-3. Run register command on Server terminal. It will print feedback message from Port-Mapper:
+3. Run register command on Server terminal (3 servers). It will print feedback message from Port-Mapper:
 (server)# register MapReduceLibrary 1
 Congratulations, 2 services rigistered successfully!
 
 4. List registerd services on Port-Mapper:
 (port-mapper)# list
-Server_IP     |Port |Program_name|Version|Procedure
-127.0.0.1|38701|MapReduceLibrary|1|Index
-127.0.0.1|38701|MapReduceLibrary|1|Reduce
 
-+------------------+
-| Request services |
-+------------------+
++---------+
+| Request |
++---------+
 
 Client request server info (IP and port) from Port Mapper. Client should provide program name,
 version number, and procedure name.
    
 = Pre-steps =
-Server has registered services into port mapper table, as Register Services step 2 or step 4 shows.
+1. Server has registered services into port mapper table, as Register Services step 2 or step 4 shows.
+
+2. On client machine, enter into client directory:
+$ cd client/
 
 = Steps =
 1. When the Client requesting, Port-Mapper will send back all the matched Server ip and port:
-$ ./minigoogle request MapReduceLibrary 1 Index
-Server_IP     |Port |Program_name     |Version|Procedure
-127.0.0.1|42467|MapReduceLibrary|1      |Index
+$ ./minigoogle request MapReduceLibrary 1 Index                             
+$ ./minigoogle request MapReduceLibrary 1 Search
 
-Choose to use service on 127.0.0.1 with port 42467 for load balance.
-
-+------------------+
-| Execute services |
-+------------------+
++-------+
+| Index |
++-------+
 
 Minigoogle execute the services provided by Server. Client should provide program name,
 version number, procedure name, input directory, and output directory.
 
 = Pre-steps =
-Server has registered services into port mapper table, as Register Services step 2 or step 4 shows.
+1. Server has registered services into port mapper table, as Register Services step 2 or step 4 shows.
+
+2. On client machine, enter into client directory:
+$ cd client/
+
+3. There are some text file to be indexing in the input directory (../data):
+$ ls ../data/ -lsh
 
 = Steps =
-1. When the Client requesting, Port-Mapper will send back all the matched Server ip and port:
-$ ./minigoogle execute MapReduceLibrary 1 Index ../data ../output
+1. When the Client executing, it print out the file operation information of each steps:
+
+$ ./minigoogle execute MapReduceLibrary 1 Index ../data ../index
+
+2. The index task will be delivered to three servers separately.
+2.1 Check the message on server1.
+2.2 Check the message on server2.
+2.3 Check the message on server3.
+
+3. Check the output directory (../index) on client side:
+$ ls -lsh ../index/
 
 
-Note:
-Currently only Split finished, to be continue...
++--------+
+| Search |
++--------+
+
+Minigoogle execute the services provided by Server. Client should provide program name,
+version number, procedure name, input directory, output directory, and terms to search.
+
+= Pre-steps =
+
+1. Index has done.
+
+2. On client machine, enter into client directory:
+$ cd client/
+
+= Steps =
+1. When the Client searching, it print out the file operation information of each steps:
+
+$ ./minigoogle execute MapReduceLibrary 1 Search ../index/ ../output "how are you doing"
+
+2. The searching task distributed to different servers:
+2.1 Check the message on server1.
+2.2 Check the message on server2.
+2.3 Check the message on server3.
+
+3. Check the output on client:
+$ cat ../output/how.txt 
+$ cat ../output/are.txt 
+$ cat ../output/you.txt 
+$ cat ../output/doing.txt 
