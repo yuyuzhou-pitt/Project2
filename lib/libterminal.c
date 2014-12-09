@@ -291,9 +291,9 @@ int helpMiniGoogle(){
     fprintf(stderr, "1. To request Multipy in Scientific Library version 2:\n");
     fprintf(stderr, "$ ./minigoogle request MapReduceLibrary 2 Search\n");
     fprintf(stderr, "2. To execute Index in Map Reduce Library version 1:\n");
-    fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Index ../input ../output\n");
+    fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Index ../data ../index\n");
     fprintf(stderr, "3. To execute Search in Map Reduce Library version 1:\n");
-    fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Search ../input ../output \"term1 term2\"\n\n");
+    fprintf(stderr, "$ ./minigoogle execute MapReduceLibrary 1 Search ../index ../output \"term1 term2\"\n\n");
 
     return 0;
 }
