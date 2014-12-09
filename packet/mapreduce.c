@@ -66,6 +66,9 @@ int callMapReduce(OptionsStruct *result_options, char *client_ip, char *server_i
         /*all the wordcount file will be store in the directory .Wordcount*/
         WordSort(received_packet->Data.para_data.data_str, result_options->option4, 
              received_packet->Data.server_number, received_packet->Data.server_no);
+
+        /*remove .Wordcount after sorting*/
+        rmrf(received_packet->Data.para_data.data_str);
     }
     else if(strcmp(received_packet->Data.exec_action, MII) == 0){
         fprintf(stdout, "Reducing file %s.\n", received_packet->Data.para_data.data_str);
@@ -82,8 +85,13 @@ int callMapReduce(OptionsStruct *result_options, char *client_ip, char *server_i
         Search(received_packet->Data.para_data.data_str, received_packet->Data.search_term, result_options->option4);
     }
     else if(strcmp(received_packet->Data.exec_action, MERGE) == 0){
-        fprintf(stdout, "Searching term \"%s\" in file %s.\n",  received_packet->Data.search_term, 
-                received_packet->Data.para_data.data_str);
+        fprintf(stdout, "Shuffling the result in directory: %s.\n", received_packet->Data.para_data.data_str);
+
+        /*all the shuffled result be store in the output directory*/
+        Shuffle(received_packet->Data.para_data.data_str, received_packet->Data.output_dir);
+
+        /*remove .Single after shuffling*/
+        rmrf(received_packet->Data.para_data.data_str);
     }
 
     return 0;

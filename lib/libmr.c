@@ -5,6 +5,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <dirent.h>
 
 #include "liblog.h"
 #include "libfile.h"
@@ -58,24 +59,20 @@ int Split(char *file, char *target_dir){
     return 0;
 }
 
-/*all the reduced file will be store in the temp directory .MII*/
-int Reduce(char *file, char *target_dir){
-    FILE *s_fp; 
+int file2mii(MIITable *miitable, char *file, int sortflag){
+    FILE *s_fp;
     char *line = NULL;
     size_t len = 0;
     ssize_t n_read;
-    
+
     if ((s_fp = fopen(file,"r")) < 0){
         snprintf(logmsg, sizeof(logmsg), "readfile: Failed to open file: %s\n", file);
         logging(LOGFILE, logmsg);
         return -1;
     }
-    
+
     char w_line[1024];
     int aN;
-    char target_file[1024];
-    MIITable *miitable;
-    miitable = initMIITable();
     int str_len = 0;
     while ((n_read = getline(&line, &len, s_fp)) != -1) {
         /*split line*/
@@ -104,15 +101,32 @@ int Reduce(char *file, char *target_dir){
         /*generate the mii node*/
         MIITable *mii;
         mii = (MIITable *)malloc(sizeof(MII));
-        mii->posting = postlist; 
+        mii->posting = postlist;
 
-        /*insert posting list into mii table according to term (alphabeta)*/
-        insertMIITable(miitable, mii);
+        if(sortflag == 0){
+            /*insert posting list into mii table according to term (alphabeta)*/
+            insertMIITable(miitable, mii);
+        }
+        else if(sortflag == 1){
+            /*insert posting list into mii table according to payload sum */
+            insertMIIByPayload(miitable, mii);
+        }
     }
     fclose(s_fp);
-    
+
+    return 0;
+}
+
+/*all the reduced file will be store in the temp directory .MII*/
+int Reduce(char *file, char *target_dir){
+    MIITable *miitable;
+    miitable = initMIITable();
+
+    file2mii(miitable, file, 0);
+
     /*create new file name (e.g.: a_Sort.txt -> a_MII.txt)*/
     char old_file[30];
+    char target_file[1024];
     snprintf(old_file, sizeof(old_file), getStrAfterDelimiter(file, '/'));
     snprintf(target_file, sizeof(target_file), "%s/%c_%s.txt", target_dir, old_file[0], MII);
     char mii_str[WRITE_BLOCK];
@@ -147,7 +161,8 @@ int Search(char *file, char *term, char *target_dir){
         if(strcmp(term, str_array->terms[0]) == 0){
             bingo = 1;
             for(aN=1;aN < str_array->count;aN=aN+2){
-                snprintf(w_line, sizeof(w_line), "%s\t%s\n", str_array->terms[aN], str_array->terms[aN+1]);
+                snprintf(w_line, sizeof(w_line), "%s\t%s\t%s\n", str_array->terms[aN], 
+                         term, str_array->terms[aN+1]);
                 writeFile(w_line, strlen(w_line), target_file, "a");
             }
         }
@@ -159,6 +174,40 @@ int Search(char *file, char *term, char *target_dir){
     }
 
     fclose(s_fp);
+
+    return 0;
+}
+
+/*all the shuffled result be store in the output directory*/
+int Shuffle(char *srcdir, char *destdir){
+    MIITable *miitable;
+    miitable = initMIITable();
+
+    /*go through the files in the directory*/
+    DIR *in_dp;
+    struct dirent *in_ep;
+
+    in_dp = opendir(srcdir);
+
+    char file_path[128];
+    if (in_dp != NULL){
+        while (in_ep = readdir (in_dp)){
+            snprintf(file_path, sizeof(file_path), "%s/%s", srcdir, in_ep->d_name);
+            file2mii(miitable, file_path, 1);
+            //file2mii(miitable, file_path, 0);
+        }
+        (void) closedir (in_dp);
+    }
+    else
+        perror ("Couldn't open the directory");
+
+    /*create new file name (e.g.: a_Sort.txt -> a_MII.txt)*/
+    char target_file[1024];
+    snprintf(target_file, sizeof(target_file), "%s/___result.txt", destdir);
+    char mii_str[WRITE_BLOCK];
+    memset(mii_str, 0, sizeof(mii_str));
+    mii2strWithSum(mii_str, miitable);
+    writeFile(mii_str, strlen(mii_str), target_file, "w");
 
     return 0;
 }

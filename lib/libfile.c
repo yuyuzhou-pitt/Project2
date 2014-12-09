@@ -142,6 +142,17 @@ int readFile(char *str, int size, char *file){
     return 0;
 }
 
+int printFile(char *filename){
+    int c;
+    FILE *file;
+    file = fopen(filename, "r");
+    if (file) {
+        while ((c = getc(file)) != EOF)
+            putchar(c);
+        fclose(file);
+    }
+}
+
 int unlinkFile(char *file){
 
     if(access(file, F_OK) < 0) {
@@ -169,7 +180,10 @@ int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW
 }
 
 int rmrf(char *path){
-    return nftw(path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
+    struct stat st = {0};
+    if (stat(path, &st) != -1) {
+        return nftw(path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
+    }
 }
 
 int unlinkUpperFile(char *file){

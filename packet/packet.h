@@ -29,7 +29,7 @@
 
 /*define the file split block size*/
 #define SPLIT_BLOCK 65536//64K
-#define WRITE_BLOCK 1048576//1MB
+#define WRITE_BLOCK 204800//64k
 //#define SPLIT_BLOCK 16384//16k
 
 /* client request will set these two params (for client execute) */

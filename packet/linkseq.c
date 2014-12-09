@@ -50,7 +50,7 @@ Packet_Seq *appendListSeq(Packet_Seq *head, Packet packet){
     z = head->next; // to find the rear node
     while(z->next!=z){
         r = r->next; // to find the node before rear node
-        z = r->next;
+        z = z->next;
     }
 
     t = (Packet_Seq *)malloc(sizeof *t);

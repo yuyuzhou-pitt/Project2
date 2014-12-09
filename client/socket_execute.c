@@ -253,10 +253,7 @@ int sortJobTracker(OptionsStruct *exec_options){
     /*clear temp directory before execution*/
     char temp_dir[128];
     snprintf(temp_dir, sizeof(temp_dir), "../.%s", exec_options->action);
-    struct stat st = {0};
-    if (stat(temp_dir, &st) != -1) {
-        rmrf(temp_dir);
-    }
+    rmrf(temp_dir);
 
     struct timeval t_stamp;
 
@@ -270,9 +267,15 @@ int sortJobTracker(OptionsStruct *exec_options){
             i_thread = 0;
         }
 
-        t_stamp = getUTimeStamp();
-        snprintf(new_dir, sizeof(new_dir), "%s___%d_%d", src_dir, t_stamp.tv_sec, t_stamp.tv_usec);
-        copy_dir(src_dir, new_dir);
+        /*make extra copy when sending to more than one server*/
+        if(sN >= 1){
+            t_stamp = getUTimeStamp();
+            snprintf(new_dir, sizeof(new_dir), "%s___%d_%d", src_dir, t_stamp.tv_sec, t_stamp.tv_usec);
+            copy_dir(src_dir, new_dir);
+        }
+        else{
+            snprintf(new_dir, sizeof(new_dir), "%s", src_dir);
+        }
 
         snprintf(exec_options->option4, sizeof(exec_options->option4),
                  "%s", new_dir); //exec_pkt->Data.para_data.data_str
@@ -295,14 +298,37 @@ int sortJobTracker(OptionsStruct *exec_options){
     return 0;
 }
 
+int shuffleJobTracker(OptionsStruct *exec_options){
+    /*clear temp directory before execution*/
+    char temp_dir[128];
+    snprintf(temp_dir, sizeof(temp_dir), "../.%s", exec_options->action);
+    rmrf(temp_dir);
+
+    if (i_thread == NTHREADS){
+        i_thread = 0;
+    }
+
+    //snprintf(exec_options->option4, sizeof(exec_options->option4),
+    //         "%s", new_dir); //exec_pkt->Data.para_data.data_str
+    snprintf(exec_options->remote_ipstr, sizeof(exec_options->remote_ipstr),
+             "%s", requested_servers->portMapperTable[requested_servers->response_index].server_ip); //socket host
+    snprintf(exec_options->remote_port, sizeof(exec_options->remote_port),
+             "%s", requested_servers->portMapperTable[requested_servers->response_index].port_number); // socket port
+
+    fprintf(stderr, "Shufflting the result ...\n");
+
+    /*connectServer(exec_options);*/
+    pthread_create(&connect_id[i_thread], NULL, &connectServer, (void **)exec_options);
+    pthread_join(connect_id[i_thread], NULL);
+
+    return 0;
+}
+
 int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_terms){
     /*clear temp directory before execution*/
     char temp_dir[128];
     snprintf(temp_dir, sizeof(temp_dir), "../.%s", exec_options->action);
-    struct stat st = {0};
-    if (stat(temp_dir, &st) != -1) {
-        rmrf(temp_dir);
-    }
+    rmrf(temp_dir);
 
     /*go through the files in the directory*/
     DIR *in_dp;
@@ -364,19 +390,6 @@ int searchJobTracker(OptionsStruct *exec_options, SplitStr *s_terms){
         }
         (void) closedir (in_dp);
 
-        snprintf(output_file, sizeof(result_file), "%s/%s.txt", exec_options->option5, s_terms->terms[iN]); // the result from index
-
-        /*check the result from remote*/
-        if(file_found == 1){
-            snprintf(result_file, sizeof(result_file), "../.%s_%s/%s.txt", addrstr, SINGLE, s_terms->terms[iN]); // the result from index
-            if(copy_file(result_file, output_file) != 0)
-                fprintf(stderr, "Error copying file: %s!\n", output_file);
-        }
-        else{
-            char w_line[128];
-            snprintf(w_line, sizeof(w_line), "Sorry, term \"%s\" found nowhere.\n", s_terms->terms[iN]);
-            writeFile(w_line, strlen(w_line), output_file, "w");
-        }
     }
 
     return 0;
@@ -386,10 +399,7 @@ int indexJobTracker(OptionsStruct *exec_options){
     /*clear temp directory before execution*/
     char temp_dir[128];
     snprintf(temp_dir, sizeof(temp_dir), "../.%s", exec_options->action);
-    struct stat st = {0};
-    if (stat(temp_dir, &st) != -1) {
-        rmrf(temp_dir);
-    }
+    rmrf(temp_dir);
 
     /*go through the files in the directory*/
     DIR *in_dp;
@@ -472,43 +482,48 @@ void *execlient(void *arg){
 
     /*client decide which action to execute*/
     if(strcmp(exec_options->option3, INDEX) == 0){
-        fprintf(stderr, "###### Start spliting: %s ######\n", exec_options->option4);
         /*split input file into specific bloks*/
+        fprintf(stderr, "###### Start spliting: %s ######\n", exec_options->option4);
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", SPLIT);
         indexJobTracker(exec_options);
 
-        fprintf(stderr, "###### Start wordcounting: %s ######\n", exec_options->option4);
         /*collect word count in each file*/
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", WORDCOUNT);
+        fprintf(stderr, "###### Start wordcounting: %s ######\n", exec_options->option4);
         indexJobTracker(exec_options);
 
-        fprintf(stderr, "###### Start sorting: %s ######\n", exec_options->option4);
         /*sort the file to put the same term in the same file (AlphaBeta)*/
+        fprintf(stderr, "###### Start sorting: %s ######\n", exec_options->option4);
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", SORT);
         sortJobTracker(exec_options);
 
-        fprintf(stderr, "###### Start reducing: %s ######\n", exec_options->option4);
         /*reduce the file to merge the same term (master inverted index) (AlphaBeta)*/
+        fprintf(stderr, "###### Start reducing: %s ######\n", exec_options->option4);
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", MII); // the result of master inverted index
         indexJobTracker(exec_options);
 
         fprintf(stderr, "###### Indexing task done, check your result please: %s. ######\n", exec_options->option5);
     }
     else if(strcmp(exec_options->option3, SEARCH) == 0){
-        fprintf(stderr, "###### Start searching term(s): %s ######\n", exec_options->option6);
-
         /*turn the terms into array*/
         terms = (SplitStr *)malloc(sizeof(SplitStr));
         str2array(terms, exec_options->option6, ' ');  //split by space
 
         /*start the searching job, handle with one term*/
+        fprintf(stderr, "###### Searching term(s): %s ######\n", exec_options->option6);
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", SINGLE);
         searchJobTracker(exec_options, terms);
 
-        /*start the searching job, merge the result*/
-        //snprintf(exec_options->action, sizeof(exec_options->action), "%s", MERGE);
-        //searchJobTracker(exec_options, terms);
-        fprintf(stderr, "###### Searching task done, check your result please: %s. ######\n", exec_options->option5);
+        /*shuffle the result*/
+        fprintf(stderr, "###### Shuffling: %s ######\n", exec_options->option4);
+        snprintf(exec_options->action, sizeof(exec_options->action), "%s", MERGE);
+        shuffleJobTracker(exec_options);
+
+        /*print the result*/
+        char result_file[128];
+        snprintf(result_file, sizeof(result_file), "%s/___result.txt", exec_options->option5);
+        fprintf(stderr, "###### Searching task done, check your result please: %s. ######\n", result_file);
+        printFile(result_file);
     }
 
     pthread_exit(0);

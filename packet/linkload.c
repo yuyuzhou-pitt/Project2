@@ -37,7 +37,7 @@ LoadLink *enqueue(LoadLink *head, PortMapperTable portMapperTable){
     z = head->next; // to find the rear LoadLink
     while(z->next!=z){
         r = r->next; // to find the LoadLink before rear LoadLink
-        z = r->next;
+        z = z->next;
     }
 
     t = (LoadLink *)malloc(sizeof *t);
