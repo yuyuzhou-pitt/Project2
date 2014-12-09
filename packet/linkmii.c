@@ -215,7 +215,7 @@ int post2str(char *post_str, POSTING *list){
     return 0;
 }
 
-int mii2str(char *mii_str, MIITable *miitalbe){
+int mii2str(FILE *mii_file, MIITable *miitalbe){
     MIITable *r, *z;
     r = miitalbe;
     z = miitalbe->next; // to find the rear MII
@@ -224,8 +224,7 @@ int mii2str(char *mii_str, MIITable *miitalbe){
         char post_str[10240];
         memset(post_str, 0, sizeof(post_str));
         post2str(post_str, z->posting);
-        strcat(mii_str, post_str);
-        strcat(mii_str, "\n");
+        fprintf(mii_file, "%s\n", post_str);
         r = r->next; // to find the POSTING before rear MII
         z = z->next;
     }
@@ -253,7 +252,7 @@ int post2strWithSum(char *post_str, POSTING *list){
     return 0;
 }
 
-int mii2strWithSum(char *mii_str, MIITable *miitalbe){
+int mii2strWithSum(FILE *mii_file, MIITable *miitalbe){
     MIITable *r, *z;
     r = miitalbe;
     z = miitalbe->next; // to find the rear MII
@@ -262,8 +261,7 @@ int mii2strWithSum(char *mii_str, MIITable *miitalbe){
         char post_str[10240];
         memset(post_str, 0, sizeof(post_str));
         post2strWithSum(post_str, z->posting);
-        strcat(mii_str, post_str);
-        strcat(mii_str, "\n");
+        fprintf(mii_file, "%s\n", post_str);
         r = r->next; // to find the POSTING before rear MII
         z = z->next;
     }

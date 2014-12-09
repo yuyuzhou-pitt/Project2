@@ -179,6 +179,13 @@ int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW
     return rv;
 }
 
+int mkDir(char *new_dir){
+    struct stat st = {0};
+    if (stat(new_dir, &st) == -1) {
+        mkdir(new_dir, 0700);
+    }
+}
+
 int rmrf(char *path){
     struct stat st = {0};
     if (stat(path, &st) != -1) {

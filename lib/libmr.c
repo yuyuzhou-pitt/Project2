@@ -131,8 +131,12 @@ int Reduce(char *file, char *target_dir){
     snprintf(target_file, sizeof(target_file), "%s/%c_%s.txt", target_dir, old_file[0], MII);
     char mii_str[WRITE_BLOCK];
     memset(mii_str, 0, sizeof(mii_str));
-    mii2str(mii_str, miitable);
-    writeFile(mii_str, strlen(mii_str), target_file, "w");
+    FILE *mii_file;
+    if( (mii_file=fopen(target_file,"a")) != NULL){
+        mii2str(mii_file, miitable);
+        fclose(mii_file);
+    }
+
     return 0;
 }
 
@@ -194,7 +198,6 @@ int Shuffle(char *srcdir, char *destdir){
         while (in_ep = readdir (in_dp)){
             snprintf(file_path, sizeof(file_path), "%s/%s", srcdir, in_ep->d_name);
             file2mii(miitable, file_path, 1);
-            //file2mii(miitable, file_path, 0);
         }
         (void) closedir (in_dp);
     }
@@ -206,8 +209,11 @@ int Shuffle(char *srcdir, char *destdir){
     snprintf(target_file, sizeof(target_file), "%s/___result.txt", destdir);
     char mii_str[WRITE_BLOCK];
     memset(mii_str, 0, sizeof(mii_str));
-    mii2strWithSum(mii_str, miitable);
-    writeFile(mii_str, strlen(mii_str), target_file, "w");
+    FILE *mii_file;
+    if( (mii_file=fopen(target_file,"a")) != NULL){
+        mii2strWithSum(mii_file, miitable);
+        fclose(mii_file);
+    }
 
     return 0;
 }
