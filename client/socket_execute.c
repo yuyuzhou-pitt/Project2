@@ -274,9 +274,9 @@ int sortJobTracker(OptionsStruct *exec_options){
         #ifdef TIMESTAMP
         struct timeval t_stamp8 = getUTimeStamp();
         t_elapse = getTimeElapse(t_stamp8, t_stamp0);
-        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "*********************************\n");
         fprintf(stderr, "** Time elapsed %d s %d us. **\n", t_elapse.tv_sec, t_elapse.tv_usec);
-        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "*********************************\n");
         #endif
 
         snprintf(exec_options->option4, sizeof(exec_options->option4),
@@ -507,9 +507,9 @@ void *execlient(void *arg){
         #ifdef TIMESTAMP
         struct timeval t_stamp2 = getUTimeStamp();
         t_elapse = getTimeElapse(t_stamp2, t_stamp0);
-        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "*********************************\n");
         fprintf(stderr, "** Time elapsed %d s %d us. **\n", t_elapse.tv_sec, t_elapse.tv_usec);
-        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "*********************************\n");
         #endif
 
         /*sort the file to put the same term in the same file (AlphaBeta)*/
@@ -522,9 +522,9 @@ void *execlient(void *arg){
         #ifdef TIMESTAMP
         struct timeval t_stamp3 = getUTimeStamp();
         t_elapse = getTimeElapse(t_stamp3, t_stamp0);
-        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "*********************************\n");
         fprintf(stderr, "** Time elapsed %d s %d us. **\n", t_elapse.tv_sec, t_elapse.tv_usec);
-        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "*********************************\n");
         #endif
 
         /*reduce the file to merge the same term (master inverted index) (AlphaBeta)*/
@@ -540,9 +540,9 @@ void *execlient(void *arg){
         #ifdef TIMESTAMP
         struct timeval t_stamp4 = getUTimeStamp();
         t_elapse = getTimeElapse(t_stamp4, t_stamp0);
-        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "*********************************\n");
         fprintf(stderr, "** Time elapsed %d s %d us. **\n", t_elapse.tv_sec, t_elapse.tv_usec);
-        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "*********************************\n");
         #endif
     }
     else if(strcmp(exec_options->option3, SEARCH) == 0){
@@ -573,9 +573,9 @@ void *execlient(void *arg){
         #ifdef TIMESTAMP
         struct timeval t_stamp7 = getUTimeStamp();
         t_elapse = getTimeElapse(t_stamp7, t_stamp0);
-        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "*********************************\n");
         fprintf(stderr, "** Time elapsed %d s %d us. **\n", t_elapse.tv_sec, t_elapse.tv_usec);
-        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "*********************************\n");
         #endif
 
         printFile(result_file);
