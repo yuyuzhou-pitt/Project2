@@ -22,7 +22,7 @@ public class Indexing
         while (tokenizer.hasMoreTokens()) 
         {
         	String token = tokenizer.nextToken();
-            word.set(token+":"+filename);
+            word.set(token.toLowerCase()+":"+filename);
             output.collect(word, one);
         }
     }
