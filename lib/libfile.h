@@ -17,6 +17,7 @@ int getPortNumber(char *ipfile);
 int checkSpecialChar(char *str);
 int getTimeStamp();
 struct timeval getUTimeStamp();
+struct timeval getTimeElapse(struct timeval timer1, struct timeval timer2);
 const char *getStrAfterDelimiter(const char *filename, char delimiter);
 
 #endif

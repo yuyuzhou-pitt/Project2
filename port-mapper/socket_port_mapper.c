@@ -78,8 +78,8 @@ void *port_mapper_thread(void *arg){
     /* Register service */
     if(strcmp(packet_recv->packet_type, "000") == 0){
         int dup_register = 0;
-        snprintf(logmsg, sizeof(logmsg), "serverthread(0x%x): packet_recv type: %s\n", pthread_self(), packet_recv->packet_type);
-        logging(LOGFILE, logmsg);
+        //snprintf(logmsg, sizeof(logmsg), "serverthread(0x%x): packet_recv type: %s\n", pthread_self(), packet_recv->packet_type);
+        //logging(LOGFILE, logmsg);
         dup_register = writePortMapperTable(packet_recv, PORT_MAPPER_TABLE_FILE);
         sendRegisterReply(sockfd, packet_recv, dup_register);
     }
@@ -101,8 +101,8 @@ void *port_mapper_thread(void *arg){
     pthread_mutex_unlock(&mutex);
 
     shutdown(sockfd, SHUT_RDWR);
-    snprintf(logmsg, sizeof(logmsg), "serverthread(0x%x): served request, exiting thread\n", pthread_self());
-    logging(LOGFILE, logmsg);
+    //snprintf(logmsg, sizeof(logmsg), "serverthread(0x%x): served request, exiting thread\n", pthread_self());
+    //logging(LOGFILE, logmsg);
 
     //pthread_exit(0);
     free(packet_recv);
@@ -208,8 +208,8 @@ void *sock_port_mapper(void *arg){
                 break;
             default:
                 if (FD_ISSET(sockfd, &ready_set)){
-                    snprintf(logmsg, sizeof(logmsg), "sockserver(0x%x): Listening socket is readable\n", pthread_self());
-                    logging(LOGFILE, logmsg);
+                    //snprintf(logmsg, sizeof(logmsg), "sockserver(0x%x): Listening socket is readable\n", pthread_self());
+                    //logging(LOGFILE, logmsg);
                     /* wait for connection */
                     client_fd = Accept(sockfd, client_sockaddr, sin_size);
                     for(k=0;k<FD_SETSIZE;k++){

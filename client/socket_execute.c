@@ -54,7 +54,7 @@ char addrstr[100]; // local ip address (eth0)
 
 pthread_mutex_t execute_mutex;
 
-//#define TIMESTAMP 1
+#define TIMESTAMP 1
 
 static struct rtt_info   rttinfo;
 static int      rttinit = 0;
@@ -69,6 +69,8 @@ SplitStr *terms; //the terms to be search
 int i_thread = 0;
 
 struct timeval t_stamp;
+struct timeval t_stamp0;
+struct timeval t_elapse;
 
 /*handle the server connection*/
 void connectServer(void *arg){
@@ -230,12 +232,6 @@ sendagain:
         //fprintf(stderr, "\n(TS:%d) Congratulations! RPC %s completed successfully.\n\n", 
         //       time2, packet_ack->Data.procedure_name);
 
-        #ifdef TIMESTAMP
-        fprintf(stderr, "**************************\n");
-        fprintf(stderr, "** Time elapsed %d us. **\n", time2 - time1);
-        fprintf(stderr, "**************************\n");
-        #endif
-
         /*remove packet_reply transaction from executeResultSeq*/
         clearTransaction(executeResultSeq, packet_reply->Data.transaction_id);
         /*remove packet_execute (packet_ack) transaction from executePacketSeq*/
@@ -274,6 +270,14 @@ int sortJobTracker(OptionsStruct *exec_options){
         t_stamp = getUTimeStamp();
         snprintf(new_dir, sizeof(new_dir), "%s___%d_%d", src_dir, t_stamp.tv_sec, t_stamp.tv_usec);
         copy_dir(src_dir, new_dir);
+
+        #ifdef TIMESTAMP
+        struct timeval t_stamp8 = getUTimeStamp();
+        t_elapse = getTimeElapse(t_stamp8, t_stamp0);
+        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "** Time elapsed %d s %d us. **\n", t_elapse.tv_sec, t_elapse.tv_usec);
+        fprintf(stderr, "************************************\n");
+        #endif
 
         snprintf(exec_options->option4, sizeof(exec_options->option4),
                  "%s", new_dir); //exec_pkt->Data.para_data.data_str
@@ -483,12 +487,15 @@ void *execlient(void *arg){
     char tmp_dir[128];
     char out_dir[128];
     snprintf(out_dir, sizeof(out_dir), exec_options->option5);
+    t_stamp0 = getUTimeStamp();
     /*client decide which action to execute*/
     if(strcmp(exec_options->option3, INDEX) == 0){
         /*split input file into specific bloks*/
         fprintf(stderr, "###### Start spliting: %s ######\n", exec_options->option4);
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", SPLIT);
         indexJobTracker(exec_options);
+
+        struct timeval t_stamp1 = getUTimeStamp();
 
         /*collect word count in each file*/
         snprintf(tmp_dir, sizeof(tmp_dir), exec_options->option4);
@@ -497,12 +504,28 @@ void *execlient(void *arg){
         indexJobTracker(exec_options);
         rmrf(tmp_dir);
 
+        #ifdef TIMESTAMP
+        struct timeval t_stamp2 = getUTimeStamp();
+        t_elapse = getTimeElapse(t_stamp2, t_stamp0);
+        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "** Time elapsed %d s %d us. **\n", t_elapse.tv_sec, t_elapse.tv_usec);
+        fprintf(stderr, "************************************\n");
+        #endif
+
         /*sort the file to put the same term in the same file (AlphaBeta)*/
         snprintf(tmp_dir, sizeof(tmp_dir), exec_options->option4);
         fprintf(stderr, "###### Start sorting: %s ######\n", exec_options->option4);
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", SORT);
         sortJobTracker(exec_options);
         rmrf(tmp_dir);
+
+        #ifdef TIMESTAMP
+        struct timeval t_stamp3 = getUTimeStamp();
+        t_elapse = getTimeElapse(t_stamp3, t_stamp0);
+        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "** Time elapsed %d s %d us. **\n", t_elapse.tv_sec, t_elapse.tv_usec);
+        fprintf(stderr, "************************************\n");
+        #endif
 
         /*reduce the file to merge the same term (master inverted index) (AlphaBeta)*/
         snprintf(tmp_dir, sizeof(tmp_dir), exec_options->option4);
@@ -513,6 +536,14 @@ void *execlient(void *arg){
         rmrf(tmp_dir);
 
         fprintf(stderr, "###### Indexing task done, check your result please: %s. ######\n", exec_options->option5);
+
+        #ifdef TIMESTAMP
+        struct timeval t_stamp4 = getUTimeStamp();
+        t_elapse = getTimeElapse(t_stamp4, t_stamp0);
+        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "** Time elapsed %d s %d us. **\n", t_elapse.tv_sec, t_elapse.tv_usec);
+        fprintf(stderr, "************************************\n");
+        #endif
     }
     else if(strcmp(exec_options->option3, SEARCH) == 0){
         /*turn the terms into array*/
@@ -523,6 +554,8 @@ void *execlient(void *arg){
         fprintf(stderr, "###### Searching term(s): %s ######\n", exec_options->option6);
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", SINGLE);
         searchJobTracker(exec_options, terms);
+    
+        struct timeval t_stamp5 = getUTimeStamp();
 
         /*shuffle the result*/
         fprintf(stderr, "###### Shuffling: %s ######\n", exec_options->option4);
@@ -530,10 +563,21 @@ void *execlient(void *arg){
         snprintf(exec_options->action, sizeof(exec_options->action), "%s", MERGE);
         shuffleJobTracker(exec_options);
 
+        struct timeval t_stamp6 = getUTimeStamp();
+
         /*print the result*/
         char result_file[128];
         snprintf(result_file, sizeof(result_file), "%s/___result.txt", exec_options->option5);
-        fprintf(stderr, "###### Searching task done, check your result please: %s. ######\n", result_file);
+        fprintf(stderr, "###### Searching task done, here is the sorted result: %s. ######\n", result_file);
+
+        #ifdef TIMESTAMP
+        struct timeval t_stamp7 = getUTimeStamp();
+        t_elapse = getTimeElapse(t_stamp7, t_stamp0);
+        fprintf(stderr, "************************************\n");
+        fprintf(stderr, "** Time elapsed %d s %d us. **\n", t_elapse.tv_sec, t_elapse.tv_usec);
+        fprintf(stderr, "************************************\n");
+        #endif
+
         printFile(result_file);
     }
 

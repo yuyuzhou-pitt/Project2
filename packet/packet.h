@@ -9,7 +9,7 @@
 #define EXECUTE_RESULT_FILE ".port_mapper_execute_result"
 
 /*define the hello packet interval*/
-#define HELLO_INTERVAL 4 // for hello packet, in seconds
+#define HELLO_INTERVAL 20 // for hello packet, in seconds
 
 /*define the packet data length*/
 #define INTMTU 256

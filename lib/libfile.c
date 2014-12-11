@@ -419,6 +419,21 @@ struct timeval getUTimeStamp(){
     return timer;
 }
 
+struct timeval getTimeElapse(struct timeval timer2, struct timeval timer1){
+    int int1s = 1000000;
+    struct timeval timer;
+    timer.tv_sec = timer2.tv_sec - timer1.tv_sec;
+    if(timer2.tv_usec < timer1.tv_usec){
+        timer.tv_usec = int1s - timer1.tv_usec + timer2.tv_usec;
+        timer.tv_sec -= 1;
+    }
+    else{
+        timer.tv_usec = timer2.tv_usec - timer1.tv_usec;
+    }
+
+    return timer;
+}
+
 /* return file extention when delimiter is '.', or
  * return filename when delimiter is '/'*/
 const char *getStrAfterDelimiter(const char *filename, char delimiter) {

@@ -75,8 +75,8 @@ int Accept(int sockfd, struct sockaddr_in sockaddr, int sin_size){
         perror("accept");
         return -1;
     }
-    char logmsg[128]; snprintf(logmsg, sizeof(logmsg), "New incoming connection - %d\n", client_fd);
-    logging(LOGFILE, logmsg);
+    //char logmsg[128]; snprintf(logmsg, sizeof(logmsg), "New incoming connection - %d\n", client_fd);
+    //logging(LOGFILE, logmsg);
     return client_fd;
 }
 
