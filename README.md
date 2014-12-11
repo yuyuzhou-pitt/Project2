@@ -163,7 +163,7 @@ A Hadoop environment is setup and ready to use.
 
 = Steps =
 1. Search the keyword "what a nice day" in the index directory:
-$ hadoop jar MiniGoogle.jar MiniGoogle index result what a nice day
+$ hadoop jar MiniGoogle.jar MiniGoogle/MiniGoogle index result what a nice day
 2. Check the search result:
 $ hadoop dfs -cat result/part-r-00000
 
@@ -191,11 +191,13 @@ Hadoop version:
 $ for i in 0 1 2 3 4 5 6 7 8 9; do time hadoop jar MiniGoogle.jar Indexing data index; done
 
 2. Run Searching step 1 for 10 times, and record the Map-Reduce Framework/CPU time spent (ms) (take real time for reference):
-$ for i in 0 1 2 3 4 5 6 7 8 9; do time hadoop jar MiniGoogle.jar MiniGoogle index result what a nice day; done
+$ for i in 0 1 2 3 4 5 6 7 8 9; do time hadoop jar MiniGoogle.jar MiniGoogle/MiniGoogle index result what a nice day; done
 
 = Results =
 
-	Wordcount	Sort		Index		Search
+The time spend result (in second) recorded as below:
+
+	Wordcount	Sort(W+S)	Index(W+S+I)	Search
 Socket	1.146928	2.305397	4.541908	0.164810
 Socket	1.202855	2.336820	4.632236	0.165075
 Socket	1.307164	2.435692	4.738004	0.170763
@@ -205,7 +207,7 @@ Socket	1.585199	2.707569	5.225632	0.166475
 Socket	1.694932	2.848935	5.386795	0.171973
 Socket	1.739059	2.924582	5.588107	0.168603
 Socket	1.242837	2.380279	4.675156	0.175365
-Hadoop	(CPU time spent (ms))		18.840		4.120
+Hadoop	(CPU time spent (s))		18.840		4.120
 Hadoop					19.690		4.340
 Hadoop					18.910		3.770
 Hadoop					19.540		3.830
